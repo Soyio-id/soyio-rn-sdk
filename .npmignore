@@ -1,0 +1,7 @@
+//.npmignore
+*
+!index.ts
+!package/**/*.tsx
+!package/**/*.ts
+!package/**/*.js
+!package/**/*.jsx
