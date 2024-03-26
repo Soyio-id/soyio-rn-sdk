@@ -1,6 +1,6 @@
 {
   "name": "@soyio/soyio-rn-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "./package/index.js",
   "types": "./package/index.d.ts",
   "scripts": {
@@ -14,11 +14,13 @@
     "build:cjs": "tsc --module commonjs"
   },
   "dependencies": {
-    "expo": "~50.0.14",
     "expo-status-bar": "~1.11.1",
-    "expo-web-browser": "~12.8.2",
-    "react": "18.2.0",
-    "react-native": "0.73.6"
+    "expo-web-browser": "~12.8.2"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "expo": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
