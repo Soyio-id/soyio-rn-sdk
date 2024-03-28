@@ -1,0 +1,66 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  npm-release:
+    runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build the package
+        run: yarn run build
+
+      - name: Publish the package
+        run: npm publish
+
+  github-release:
+    needs: npm-release
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Get version
+        id: version
+        run: echo "version=$(npm run --silent version:get)" >> $GITHUB_ENV
+
+      - name: Get Pull Request data
+        uses: jwalton/gh-find-current-pr@v1
+        id: find-pr
+        with:
+          state: all
+
+      - name: Tag and Release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.IGNACIOM_PAT }}
+        with:
+          tag_name: ${{ env.version }}
+          release_name: ${{ steps.version.outputs.version }}
+          body: |
+            ${{ steps.find-pr.outputs.body }}
+          draft: false
+          prerelease: false
