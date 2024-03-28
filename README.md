@@ -98,8 +98,8 @@ The `onEventChange` function returns an object with the following properties:
 
 - `url` (optional): URL associated only with the `success` event.
 
-  - For registration: `"demo://registered?userReference=<company user reference>&id=<identity_id>"`
-  - For authentication: `"demo://authenticated?userReference=<company user reference>&id=<identity_id>"`
+  - For registration: `"soyio://registered?userReference=<company user reference>&id=<identity_id>"`
+  - For authentication: `"soyio://authenticated?userReference=<company user reference>&id=<identity_id>"`
 
   where `<identity_id>` is the unique identifier of the newly registered or authenticated user, respectively.
 
