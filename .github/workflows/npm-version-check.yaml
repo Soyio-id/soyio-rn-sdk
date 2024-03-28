@@ -1,0 +1,41 @@
+name: NPM Version Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check versions
+        run: |
+          # Install dependencies required to run the scripts
+          yarn install --frozen-lockfile
+
+          # Get the current version from package.json
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          echo "Current package version: $PACKAGE_VERSION"
+
+          # Get the latest version published to npm
+          NPM_VERSION=$(npm view $(node -p "require('./package.json').name") version)
+          echo "Latest published version: $NPM_VERSION"
+
+          # Compare versions, fail if the current version is not greater than the published version
+          if [[ "$(printf '%s\n' "$PACKAGE_VERSION" "$NPM_VERSION" | sort -V | head -n1)" != "$PACKAGE_VERSION" ]]; then
+            echo "The version in package.json is greater than or equal to the version on npm, proceeding..."
+          else
+            echo "Error: The version in package.json ($PACKAGE_VERSION) must be greater than the version on npm ($NPM_VERSION)."
+            exit 1
+          fi
+
