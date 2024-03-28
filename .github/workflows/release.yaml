@@ -30,6 +30,7 @@ jobs:
 
   github-release:
     needs: npm-release
+    permissions: write-all
 
     runs-on: ubuntu-latest
     steps:
