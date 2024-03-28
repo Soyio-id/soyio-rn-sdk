@@ -1,6 +1,6 @@
 {
   "name": "@soyio/soyio-rn-sdk",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "./package/index.js",
   "types": "./package/index.d.ts",
   "scripts": {
