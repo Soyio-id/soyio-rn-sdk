@@ -1,6 +1,6 @@
 {
   "name": "@soyio/soyio-rn-sdk",
-  "version": "0.1.1",
+  "version": "0.1.6",
   "main": "./package/index.js",
   "types": "./package/index.d.ts",
   "scripts": {
@@ -25,6 +25,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.2.45",
+    "react-native": "^0.73.6",
     "typescript": "^5.1.3"
   }
 }
