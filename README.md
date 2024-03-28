@@ -25,11 +25,10 @@ yarn add @soyio/soyio-rn-sdk
 ```
 
 **IMPORTANT:**
-For developers working with a bare React Native application, it is essential to include Expo modules to ensure full compatibility and functionality of the Soyio SDK. To install Expo modules, run the following command in your project directory:
+For developers integrating with a **bare React Native** application, it's crucial to prepare your project for Expo modules and ensure it supports deep linking with a custom URL scheme. Please execute the following steps:
 
-```bash
-npx install-expo-modules
-```
+ 1. `npx install-expo-modules`: This command installs Expo modules in your React Native project, allowing you to use Expo's powerful library of APIs and components without needing to eject from the Expo managed workflow.
+ 2. `npx uri-scheme add soyio`: Adds the `soyio` scheme to your project, enabling deep linking capabilities on Android devices.
 
 ## Usage
 
@@ -98,8 +97,8 @@ The `onEventChange` function returns an object with the following properties:
 
 - `url` (optional): URL associated only with the `success` event.
 
-  - For registration: `"demo://registered?userReference=<company user reference>&id=<identity_id>"`
-  - For authentication: `"demo://authenticated?userReference=<company user reference>&id=<identity_id>"`
+  - For registration: `"soyio://registered?userReference=<company user reference>&id=<identity_id>"`
+  - For authentication: `"soyio://authenticated?userReference=<company user reference>&id=<identity_id>"`
 
   where `<identity_id>` is the unique identifier of the newly registered or authenticated user, respectively.
 

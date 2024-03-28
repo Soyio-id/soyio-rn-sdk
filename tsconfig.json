@@ -17,5 +17,5 @@
   },
   "include": ["**/*.ts", "**/*.tsx", "app.config.js"],
   "exclude": ["node_modules", "package"],
-  "extends": "expo/tsconfig.base"
+  "extends": "./tsconfig.base.json"
 }
