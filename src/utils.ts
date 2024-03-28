@@ -1,5 +1,5 @@
-import { RegisterParams, AuthenticateParams, SoyioWidgetParams } from './types';
 import { PRODUCTION_URL, SANDBOX_URL } from './constants';
+import { AuthenticateParams, RegisterParams, SoyioWidgetParams } from './types';
 
 export function getFlowUrl(
   options: SoyioWidgetParams,

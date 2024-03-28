@@ -1,0 +1,30 @@
+name: linters
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/linters.yml"
+      - "src/**"
+      - "index.ts"
+      - ".eslintrc.cjs"
+      - "tsconfig.json"
+      - "package.json"
+      - "yarn.lock"
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint with ESLint
+        run: yarn run lint
