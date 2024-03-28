@@ -14,7 +14,8 @@
     "build": "npm run build:esm && npm run build:cjs",
     "build:esm": "tsc",
     "build:cjs": "tsc --module commonjs",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "version:get": "node -p \"require('./package.json').version\""
   },
   "dependencies": {
     "expo-status-bar": "~1.11.1",
