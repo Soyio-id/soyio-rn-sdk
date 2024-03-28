@@ -1,9 +1,10 @@
-import { useCallback } from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { getFlowUrl, buildUrlParams } from './utils';
-import { SOYIO_REDIRECT_URL } from './constants';
+import { useCallback } from 'react';
 import { Platform } from 'react-native';
-import type { SoyioWidgetViewPropsType, RegisterParams, AuthenticateParams } from './types';
+
+import { SOYIO_REDIRECT_URL } from './constants';
+import type { AuthenticateParams, RegisterParams, SoyioWidgetViewPropsType } from './types';
+import { buildUrlParams, getFlowUrl } from './utils';
 
 async function getBrowserOptions() {
   const webBrowserOptions: WebBrowser.AuthSessionOpenOptions = {
@@ -13,7 +14,7 @@ async function getBrowserOptions() {
     showTitle: true,
   };
 
-  if (Platform.OS === "android") {
+  if (Platform.OS === 'android') {
     const { preferredBrowserPackage } = await WebBrowser.getCustomTabsSupportingBrowsersAsync();
     webBrowserOptions.browserPackage = preferredBrowserPackage;
   }
@@ -22,7 +23,6 @@ async function getBrowserOptions() {
 }
 
 export const useSoyioAuth = ({ options, onEventChange }: SoyioWidgetViewPropsType) => {
-
   const register = useCallback(async (registerParams: RegisterParams) => {
     const registerBaseUri = getFlowUrl(options, 'register');
     const registerUri = `${registerBaseUri}?${buildUrlParams(options, registerParams)}`;
@@ -56,12 +56,3 @@ export const useSoyioAuth = ({ options, onEventChange }: SoyioWidgetViewPropsTyp
 
   return { register, authenticate };
 };
-
-async function openInCustomTab(url) {
-  if (Platform.OS === "android") {
-      const {preferredBrowserPackage} = await WebBrowser.getCustomTabsSupportingBrowsersAsync()
-      await WebBrowser.openBrowserAsync(url, {browserPackage: preferredBrowserPackage})
-  } else {
-      await WebBrowser.openBrowserAsync(url)
-  }
-}
