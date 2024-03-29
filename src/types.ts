@@ -8,6 +8,7 @@ export type SoyioWidgetParams = {
 export type RegisterParams = {
   flowTemplateId: string;
   userEmail?: string;
+  forceError?: 'no_error' | 'validation_error'
 }
 
 export type AuthenticateParams = {
