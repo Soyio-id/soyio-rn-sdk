@@ -33,3 +33,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# For iCloud Drive
+node_modules.nosync
+node_modules
