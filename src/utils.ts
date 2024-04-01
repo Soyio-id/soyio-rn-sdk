@@ -1,3 +1,6 @@
+import * as WebBrowser from 'expo-web-browser';
+import { Platform } from 'react-native';
+
 import { PRODUCTION_URL, SANDBOX_URL } from './constants';
 import { AuthenticateParams, RegisterParams, SoyioWidgetParams } from './types';
 
@@ -13,13 +16,41 @@ export function buildUrlParams(
   widgetParams: SoyioWidgetParams,
   flowParams: RegisterParams | AuthenticateParams,
 ): string {
-  let baseParams = `platform=rn&companyId=${widgetParams.companyId}`;
-  if (widgetParams.userReference) {
-    baseParams += `&userReference=${widgetParams.userReference}`;
-  }
-  const dynamicParams = Object.entries(flowParams)
+  // eslint-disable-next-line no-nested-ternary
+  const platformSuffix = Platform.OS === 'android' ? '-android' : Platform.OS === 'ios' ? '-ios' : '';
+  const baseParams = {
+    platform: `rn${platformSuffix}`,
+    uriScheme: widgetParams.uriScheme,
+    companyId: widgetParams.companyId,
+    userReference: widgetParams.userReference,
+  };
+
+  const allParams = { ...baseParams, ...flowParams };
+
+  const queryParams = Object.entries(allParams)
+    .filter(([, value]) => value)
     .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
     .join('&');
 
-  return `${baseParams}&${dynamicParams}`;
+  return queryParams;
+}
+
+export async function getBrowserOptions() {
+  const webBrowserOptions: WebBrowser.AuthSessionOpenOptions = {
+    dismissButtonStyle: 'cancel',
+    createTask: false,
+    enableBarCollapsing: true,
+    showTitle: true,
+  };
+
+  if (Platform.OS === 'android') {
+    const { preferredBrowserPackage } = await WebBrowser.getCustomTabsSupportingBrowsersAsync();
+    webBrowserOptions.browserPackage = preferredBrowserPackage;
+  }
+
+  return webBrowserOptions;
+}
+
+export function getRedirectUrl(scheme: string) {
+  return `${scheme}://`;
 }
