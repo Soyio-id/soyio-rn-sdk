@@ -14,7 +14,7 @@
 
 ## Installation
 
-Install using npm! (or your favorite package manager)
+- Install using npm! (or your favorite package manager)
 
 ```sh
 # Using npm
@@ -24,11 +24,18 @@ npm install @soyio/soyio-rn-sdk
 yarn add @soyio/soyio-rn-sdk
 ```
 
-**IMPORTANT:**
-For developers integrating with a **bare React Native** application, it's crucial to prepare your project for Expo modules and ensure it supports deep linking with a custom URL scheme. Please execute the following steps:
+- Add custom uri scheme to your project:
 
- 1. `npx install-expo-modules`: This command installs Expo modules in your React Native project, allowing you to use Expo's powerful library of APIs and components without needing to eject from the Expo managed workflow.
- 2. `npx uri-scheme add soyio`: Adds the `soyio` scheme to your project, enabling deep linking capabilities on Android devices.
+```bash
+npx uri-scheme add custom-uri-scheme
+```
+
+Here, `custom-uri-scheme` is a unique scheme used for redirecting within Android applications, ensuring links open in the correct app without prompting the user to choose. It should be structured uniquely for your application. For example, for a company with name `Test`, a custom uri scheme could be `soyio-test` or simply `test`.
+
+**IMPORTANT:**
+For developers integrating with a **bare React Native** application, it's crucial to prepare your project for Expo modules:
+
+`npx install-expo-modules`: This command installs Expo modules in your React Native project, allowing you to use Expo's powerful library of APIs and components without needing to eject from the Expo managed workflow.
 
 ## Usage
 
@@ -45,8 +52,9 @@ After retrieving the `useSoyioAuth` hook, you are ready to instantiate the widge
 ```jsx
 export default function App() {
   const options = {
-    userReference: "<company identifier of user>", // OPTIONAL
     companyId: "<company id>", // Starts with 'com_'
+    uriScheme: "<company custom uri scheme>"
+    userReference: "<company identifier of user>", // OPTIONAL
     isSandbox: true, // Optional. Default is false
   };
 
@@ -93,33 +101,39 @@ The `onEventChange` function returns an object with the following properties:
 
   - `"open register"`: Triggered when the user initiates the `register` method.
   - `"open authenticate"`: Triggered when the user initiates the `authenticate` method.
-  - `"close"`: Triggered when the user closes the `WebBrowser`.
+  - `"dismiss"`: Triggered when the user closes the `WebBrowser`.
   - `"success"`: Triggered when the authentication flow is successfully completed.
 
 - `url` (optional): URL associated only with the `success` event.
 
-  - For registration: `"soyio://registered?userReference=<company user reference>&id=<identity_id>"`
-  - For authentication: `"soyio://authenticated?userReference=<company user reference>&id=<identity_id>"`
+  - For registration: `"<uriScheme>://registered?userReference=<company user reference>&id=<identity_id>"`
+  - For authentication: `"<uriScheme>://authenticated?userReference=<company user reference>&id=<identity_id>"`
 
   where `<identity_id>` is the unique identifier of the newly registered or authenticated user, respectively.
 
-The `onEventChange` function should be defined as follows:
+#### Attribute Descriptions
 
-```typescript
-onEventChange?: (event: { type: string; url?: string }) => void;
-```
+- **`companyId`**: The unique identifier for the company, must start with `'com_'`.
+- **`userReference`**: (Optional) A reference identifier provided by the company for the user engaging with the widget. This identifier is used in events (`onEvent` and `webhooks`) to inform the company which user the events are associated with.
+- **`userEmail`**: The user's email address. This field is optional when the flow is `'register'`, where if not provided, Soyio will prompt the user to enter their email. However, for the `'authenticate'` flow, this field should not be provided.
+- **`flowTemplateId`**: Required only in the `'register'` flow, this identifier specifies the order and quantity of documents requested from the user. It must start with `'vft_'`.
+- **`identityId`**: Necessary only in the `'authenticate'` flow, this identifier must start with `'id_'` and signifies the user's identity.
+- **`isSandbox`**: (Optional) Indicates if the widget should operate in sandbox mode, defaulting to `false`.
+- **`uriScheme`**: The unique redirect scheme you've set with `npx uri-scheme add ...`, critical for redirect handling in your app.
 
-## Simulating a failed registration
+
+#### Simulating a failed registration
 To simulate a failed validation flow (useful for handling failure case during integration), simply add 
 ```js
 forceError: 'validation_error'
 ```
- to the `registerParams` object. This only works in the sandbox environment.
-## TypeScript support
+ to the `registerParams` object. This only works in the `sandbox` environment.
 
-This package includes TypeScript declarations for the Soyio View.
+#### TypeScript support
 
-## Developing
+This package includes TypeScript declarations..
+
+#### Developing
 
 To develop the package, you need to use `npm`. Install the dependencies:
 
