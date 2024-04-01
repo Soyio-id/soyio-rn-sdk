@@ -1,6 +1,7 @@
 export type SoyioWidgetParams = {
   companyId: string
   userReference?: string;
+  uriScheme: string;
   isSandbox?: boolean;
   developmentUrl?: string;
 }
