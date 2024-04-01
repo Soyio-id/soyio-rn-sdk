@@ -54,6 +54,7 @@ export default function App() {
   const registerParams = {
     flowTemplateId: "<flow template id>", // Starts with 'vft_'
     userEmail: "<user email>", // OPTIONAL
+    forceError: 'no_error', // OPTIONAL
   };
 
   // For authenticate existing identity
@@ -108,6 +109,12 @@ The `onEventChange` function should be defined as follows:
 onEventChange?: (event: { type: string; url?: string }) => void;
 ```
 
+## Simulating a failed registration
+To simulate a failed validation flow (useful for handling failure case during integration), simply add 
+```js
+forceError: 'validation_error'
+```
+ to the `registerParams` object. This only works in the sandbox environment.
 ## TypeScript support
 
 This package includes TypeScript declarations for the Soyio View.
