@@ -52,22 +52,22 @@ After retrieving the `useSoyioAuth` hook, you are ready to instantiate the widge
 ```jsx
 export default function App() {
   const options = {
-    companyId: "<company id>", // Starts with 'com_'
+    companyId: "<company id>",                     // Starts with 'com_'
     uriScheme: "<company custom uri scheme>"
-    userReference: "<company identifier of user>", // OPTIONAL
-    isSandbox: true, // Optional. Default is false
+    userReference: "<company identifier of user>", // Optional
+    isSandbox: true,                               // Optional
   };
 
   // For registering a new identity
   const registerParams = {
     flowTemplateId: "<flow template id>", // Starts with 'vft_'
-    userEmail: "<user email>", // OPTIONAL
-    forceError: 'no_error', // OPTIONAL
+    userEmail: "<user email>",            // Optional
+    forceError: '<error type>',           // Optional
   };
 
   // For authenticate existing identity
   const authenticateParams = {
-    identityId: "<identity id>", // Starts with 'id_'
+    identityId: "<identity id>",          // Starts with 'id_'
   };
 
   const onEventChange = (event) => {
@@ -116,22 +116,25 @@ The `onEventChange` function returns an object with the following properties:
 - **`companyId`**: The unique identifier for the company, must start with `'com_'`.
 - **`userReference`**: (Optional) A reference identifier provided by the company for the user engaging with the widget. This identifier is used in events (`onEvent` and `webhooks`) to inform the company which user the events are associated with.
 - **`userEmail`**: The user's email address. This field is optional when the flow is `'register'`, where if not provided, Soyio will prompt the user to enter their email. However, for the `'authenticate'` flow, this field should not be provided.
+- **`forceError`**: (Optional) Triggers specific errors for testing or debugging. Used to simulate failure scenarios.
 - **`flowTemplateId`**: Required only in the `'register'` flow, this identifier specifies the order and quantity of documents requested from the user. It must start with `'vft_'`.
 - **`identityId`**: Necessary only in the `'authenticate'` flow, this identifier must start with `'id_'` and signifies the user's identity.
 - **`isSandbox`**: (Optional) Indicates if the widget should operate in sandbox mode, defaulting to `false`.
 - **`uriScheme`**: The unique redirect scheme you've set with `npx uri-scheme add ...`, critical for redirect handling in your app.
 
 
-#### Simulating a failed registration
-To simulate a failed validation flow (useful for handling failure case during integration), simply add 
-```js
-forceError: 'validation_error'
-```
- to the `registerParams` object. This only works in the `sandbox` environment.
+#### Error types
+
+The `forceError` parameter can simulate the following error conditions:
+
+- `'user_exists'`: Triggers an error indicating that a user with the given credentials already exists in the system.
+- `'facial_validation_error'`: Simulates a failure in the facial video liveness test, indicating the system could not verify the user's live presence.
+- `'document_validation_error'`: Indicates an issue with validating the photos of the documents provided by the user.
+- `'unknown_error'`: Generates a generic error, representing an unspecified problem.
 
 #### TypeScript support
 
-This package includes TypeScript declarations..
+This package includes TypeScript declarations.
 
 #### Developing
 
