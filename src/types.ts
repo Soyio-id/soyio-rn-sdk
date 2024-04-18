@@ -1,3 +1,5 @@
+export type SoyioErrors = 'user_exists' | 'facial_validation_error' | 'document_validation_error' | 'unknown_error';
+
 export type SoyioWidgetParams = {
   companyId: string
   userReference?: string;
@@ -9,7 +11,7 @@ export type SoyioWidgetParams = {
 export type RegisterParams = {
   flowTemplateId: string;
   userEmail?: string;
-  forceError?: 'no_error' | 'validation_error'
+  forceError?: SoyioErrors
 }
 
 export type AuthenticateParams = {
