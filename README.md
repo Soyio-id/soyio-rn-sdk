@@ -55,6 +55,7 @@ export default function App() {
     companyId: "<company id>",                     // Starts with 'com_'
     uriScheme: "<company custom uri scheme>"
     userReference: "<company identifier of user>", // Optional
+    customColor: "<#customColor>",                 // Optional
     isSandbox: true,                               // Optional
   };
 
@@ -119,6 +120,7 @@ The `onEventChange` function returns an object with the following properties:
 - **`forceError`**: (Optional) Triggers specific errors for testing or debugging. Used to simulate failure scenarios.
 - **`flowTemplateId`**: Required only in the `'register'` flow, this identifier specifies the order and quantity of documents requested from the user. It must start with `'vft_'`.
 - **`identityId`**: Necessary only in the `'authenticate'` flow, this identifier must start with `'id_'` and signifies the user's identity.
+- **`customColor`**: (Optional) A hex code string that specifies the base color of the interface during either the authentication or registration flow.
 - **`isSandbox`**: (Optional) Indicates if the widget should operate in sandbox mode, defaulting to `false`.
 - **`uriScheme`**: The unique redirect scheme you've set with `npx uri-scheme add ...`, critical for redirect handling in your app.
 
