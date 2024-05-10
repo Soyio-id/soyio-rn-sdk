@@ -23,6 +23,7 @@ export function buildUrlParams(
     uriScheme: widgetParams.uriScheme,
     companyId: widgetParams.companyId,
     userReference: widgetParams.userReference,
+    customColor: widgetParams.customColor,
   };
 
   const allParams = { ...baseParams, ...flowParams };

@@ -5,6 +5,7 @@ export type SoyioWidgetParams = {
   userReference?: string;
   uriScheme: string;
   isSandbox?: boolean;
+  customColor?: string;
   developmentUrl?: string;
 }
 
