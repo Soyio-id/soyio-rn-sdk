@@ -61,7 +61,7 @@ export default function App() {
 
   // For registering a new identity
   const registerParams = {
-    flowTemplateId: "<flow template id>", // Starts with 'vft_'
+    flowTemplateId: "<flow template id>", // Starts with 'vt_'
     userEmail: "<user email>",            // Optional
     forceError: '<error type>',           // Optional
   };
@@ -118,7 +118,7 @@ The `onEventChange` function returns an object with the following properties:
 - **`userReference`**: (Optional) A reference identifier provided by the company for the user engaging with the widget. This identifier is used in events (`onEvent` and `webhooks`) to inform the company which user the events are associated with.
 - **`userEmail`**: The user's email address. This field is optional when the flow is `'register'`, where if not provided, Soyio will prompt the user to enter their email. However, for the `'authenticate'` flow, this field should not be provided.
 - **`forceError`**: (Optional) Triggers specific errors for testing or debugging. Used to simulate failure scenarios.
-- **`flowTemplateId`**: Required only in the `'register'` flow, this identifier specifies the order and quantity of documents requested from the user. It must start with `'vft_'`.
+- **`flowTemplateId`**: Required only in the `'register'` flow, this identifier specifies the order and quantity of documents requested from the user. It must start with `'vt_'`.
 - **`identityId`**: Necessary only in the `'authenticate'` flow, this identifier must start with `'id_'` and signifies the user's identity.
 - **`customColor`**: (Optional) A hex code string that specifies the base color of the interface during either the authentication or registration flow.
 - **`isSandbox`**: (Optional) Indicates if the widget should operate in sandbox mode, defaulting to `false`.
