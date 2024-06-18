@@ -16,10 +16,10 @@ export function buildUrlParams(
   widgetParams: SoyioWidgetParams,
   flowParams: RegisterParams | AuthenticateParams,
 ): string {
-  // eslint-disable-next-line no-nested-ternary
-  const platformSuffix = Platform.OS === 'android' ? '-android' : Platform.OS === 'ios' ? '-ios' : '';
+  const sdkSuffix = (Platform.OS === 'android' || Platform.OS === 'ios') ? `-${Platform.OS}` : '';
+
   const baseParams = {
-    platform: `rn${platformSuffix}`,
+    sdk: `rn${sdkSuffix}`,
     uriScheme: widgetParams.uriScheme,
     companyId: widgetParams.companyId,
     userReference: widgetParams.userReference,
