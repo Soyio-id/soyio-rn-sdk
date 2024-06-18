@@ -1,6 +1,6 @@
 {
   "name": "@soyio/soyio-rn-sdk",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "license": "MIT",
   "author": "Ignacio Méndez",
   "main": "./package/index.js",
