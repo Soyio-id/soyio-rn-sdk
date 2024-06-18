@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import type { AuthenticateParams, RegisterParams, SoyioWidgetViewPropsType } from './types';
 import {
   buildUrlParams,
+  ERROR_URL_REGEX,
   getBrowserOptions,
   getFlowUrl,
   getRedirectUrl,
@@ -24,7 +25,11 @@ export const useSoyioAuth = ({ options, onEventChange }: SoyioWidgetViewPropsTyp
       webBrowserOptions,
     );
 
-    if (onEventChange) onEventChange(registerResult);
+    if ((registerResult.type === 'success') && (registerResult.url?.includes('error'))) {
+      const errorMessage = registerResult.url.match(ERROR_URL_REGEX)[1];
+
+      if (onEventChange) onEventChange({ type: 'error', message: errorMessage });
+    } else if (onEventChange) onEventChange(registerResult);
   }, [options, onEventChange]);
 
   const authenticate = useCallback(async (authenticateParams: AuthenticateParams) => {

@@ -104,6 +104,7 @@ The `onEventChange` function returns an object with the following properties:
   - `"open authenticate"`: Triggered when the user initiates the `authenticate` method.
   - `"dismiss"`: Triggered when the user closes the `WebBrowser`.
   - `"success"`: Triggered when the authentication flow is successfully completed.
+  - `"error"`: Triggered when there was an error on the flow.
 
 - `url` (optional): URL associated only with the `success` event.
 
@@ -111,6 +112,10 @@ The `onEventChange` function returns an object with the following properties:
   - For authentication: `"<uriScheme>://authenticated?userReference=<company user reference>&id=<identity_id>"`
 
   where `<identity_id>` is the unique identifier of the newly registered or authenticated user, respectively.
+
+- `message` (optional): Additional information associated with the event type received.
+	- Possible messages when event type is `error`:
+		- `"DENIED_CAMERA_PERMISSION"`: User denies access to its camera.
 
 #### Attribute Descriptions
 

@@ -21,5 +21,5 @@ export type AuthenticateParams = {
 
 export type SoyioWidgetViewPropsType = {
   options: SoyioWidgetParams
-  onEventChange?: (event: { type: string; url?: string }) => void;
+  onEventChange?: (event: { type: string; url?: string, message?: string }) => void;
 }

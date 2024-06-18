@@ -55,3 +55,5 @@ export async function getBrowserOptions() {
 export function getRedirectUrl(scheme: string) {
   return `${scheme}://`;
 }
+
+export const ERROR_URL_REGEX = /[?&]error=([^&]+)/;
