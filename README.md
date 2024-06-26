@@ -71,11 +71,17 @@ export default function App() {
     identityId: "<identity id>",          // Starts with 'id_'
   };
 
+  // For signing documents (coming soon...)
+  const signatureParams = {
+    signatureTemplateId: "<signature template id>" // Starts with 'st_'
+    identityId: "<identity id>",                   // Starts with 'id_'
+  }
+
   const onEventChange = (event) => {
     console.log("Event:", event);
   };
 
-  const { register, authenticate } = useSoyioAuth({ options, onEventChange });
+  const { register, authenticate, signature } = useSoyioAuth({ options, onEventChange });
 
   const registerNewIdentity = () => {
     register(registerParams);
@@ -85,10 +91,15 @@ export default function App() {
     authenticate(authenticateParams);
   };
 
+  const signDocuments = () => {
+    signature(authenticateParams);
+  };
+
   return (
     <View>
       <Button title="Register new user" onPress={registerNewIdentity} />
       <Button title="Authenticate identity" onPress={authenticateIdentity} />
+      <Button title="Sign Documents" onPress={signDocuments} />
     </View>
   );
 }
@@ -128,6 +139,7 @@ The `onEventChange` function returns an object with the following properties:
 - **`customColor`**: (Optional) A hex code string that specifies the base color of the interface during either the authentication or registration flow.
 - **`isSandbox`**: (Optional) Indicates if the widget should operate in sandbox mode, defaulting to `false`.
 - **`uriScheme`**: The unique redirect scheme you've set with `npx uri-scheme add ...`, critical for redirect handling in your app.
+- **`signatureTemplateId`**: Identifier of template. Specifies the order and quantity of documents to sign. It must start with `'st_'`.
 
 #### Error types
 

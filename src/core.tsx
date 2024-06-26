@@ -1,7 +1,12 @@
 import * as WebBrowser from 'expo-web-browser';
 import { useCallback } from 'react';
 
-import type { AuthenticateParams, RegisterParams, SoyioWidgetViewPropsType } from './types';
+import type {
+  AuthenticateParams,
+  RegisterParams,
+  SignatureParams,
+  SoyioWidgetViewPropsType,
+} from './types';
 import {
   buildUrlParams,
   ERROR_URL_REGEX,
@@ -48,5 +53,26 @@ export const useSoyioAuth = ({ options, onEventChange }: SoyioWidgetViewPropsTyp
     if (onEventChange) onEventChange(authenticateResult);
   }, [options, onEventChange]);
 
-  return { register, authenticate };
+  const signature = useCallback(async (signatureParams: SignatureParams) => {
+    const signatureBaseUri = getFlowUrl(options, 'signature');
+    const signatureUri = `${signatureBaseUri}?${buildUrlParams(options, signatureParams)}`;
+    const redirectUrl = getRedirectUrl(options.uriScheme);
+    const webBrowserOptions = await getBrowserOptions();
+
+    if (onEventChange) onEventChange({ type: 'open signature' });
+
+    const signatureResult = await WebBrowser.openAuthSessionAsync(
+      signatureUri,
+      redirectUrl,
+      webBrowserOptions,
+    );
+
+    if ((signatureResult.type === 'success') && (signatureResult.url?.includes('error'))) {
+      const errorMessage = signatureResult.url.match(ERROR_URL_REGEX)[1];
+
+      if (onEventChange) onEventChange({ type: 'error', message: errorMessage });
+    } else if (onEventChange) onEventChange(signatureResult);
+  }, [options, onEventChange]);
+
+  return { register, authenticate, signature };
 };

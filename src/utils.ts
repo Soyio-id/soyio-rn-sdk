@@ -6,7 +6,7 @@ import { AuthenticateParams, RegisterParams, SoyioWidgetParams } from './types';
 
 export function getFlowUrl(
   options: SoyioWidgetParams,
-  flow: 'authenticate' | 'register',
+  flow: 'authenticate' | 'register' | 'signature',
 ): string {
   const baseUrl = options.developmentUrl || (options.isSandbox ? SANDBOX_URL : PRODUCTION_URL);
   return `${baseUrl}/${flow}`;
