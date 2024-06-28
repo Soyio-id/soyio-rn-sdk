@@ -19,6 +19,11 @@ export type AuthenticateParams = {
   identityId: string;
 }
 
+export type SignatureParams = {
+  signatureTemplateId: string;
+  identityId: string;
+}
+
 export type SoyioWidgetViewPropsType = {
   options: SoyioWidgetParams
   onEventChange?: (event: { type: string; url?: string, message?: string }) => void;
