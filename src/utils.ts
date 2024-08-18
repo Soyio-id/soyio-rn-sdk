@@ -2,11 +2,11 @@ import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
 
 import { PRODUCTION_URL, SANDBOX_URL } from './constants';
-import { AuthenticateParams, RegisterParams, SoyioWidgetParams } from './types';
+import { DisclosureParams, SoyioWidgetParams } from './types';
 
 export function getFlowUrl(
   options: SoyioWidgetParams,
-  flow: 'authenticate' | 'register' | 'signature',
+  request: 'disclosure' | 'signature',
 ): string {
   const baseUrl = options.developmentUrl || (options.isSandbox ? SANDBOX_URL : PRODUCTION_URL);
   return `${baseUrl}/${flow}`;
@@ -14,7 +14,7 @@ export function getFlowUrl(
 
 export function buildUrlParams(
   widgetParams: SoyioWidgetParams,
-  flowParams: RegisterParams | AuthenticateParams,
+  requestParams: DisclosureParams,
 ): string {
   const sdkSuffix = (Platform.OS === 'android' || Platform.OS === 'ios') ? `-${Platform.OS}` : '';
 
