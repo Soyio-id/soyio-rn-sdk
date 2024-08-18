@@ -56,4 +56,25 @@ export function getRedirectUrl(scheme: string) {
   return `${scheme}://`;
 }
 
-export const ERROR_URL_REGEX = /[?&]error=([^&]+)/;
+type ParsedUrlParameters = {
+  request: 'data_access' | 'signature';
+  [key: string]: string;
+};
+
+export function parseUrlResponseParams(url: string): ParsedUrlParameters {
+  const regex = /^(\w+):\/\/(\w+)\?(.+)$/;
+  const match = url.match(regex);
+
+  const [, , requestType, queryString] = match;
+
+  const params = new URLSearchParams(queryString);
+  const result: ParsedUrlParameters = {
+    request: requestType as 'data_access' | 'signature',
+  };
+
+  params.forEach((value, key) => {
+    result[key] = value;
+  });
+
+  return result;
+}
