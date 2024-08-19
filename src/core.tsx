@@ -8,8 +8,8 @@ import type {
 import {
   buildUrlParams,
   getBrowserOptions,
-  getFlowUrl,
   getRedirectUrl,
+  getRequestUrl,
   parseUrlResponseParams,
 } from './utils';
 

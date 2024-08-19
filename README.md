@@ -91,7 +91,7 @@ export default function App() {
 
 ### 2. Signature attempt (coming soon...)
 
-The **`signature_attempt`** is a process where, using a previously created `signature_attempt_id`, a flow is initiated in which a user can digitally sign a document. To sign the document, the user must be authenticated. This authentication can occur either through an access key or facial video. It's important to note that for this flow, the user must have been previously verified with Soyio.
+The **`signature_attempt`** is a process where, using a previously created `signature_attempt_id`, a request is initiated in which a user can digitally sign a document. To sign the document, the user must be authenticated. This authentication can occur either through an access key or facial video. It's important to note that for this request, the user must have been previously verified with Soyio.
 
 ```jsx
 import { useSoyioAuth } from "@soyio/soyio-rn-sdk";
@@ -118,12 +118,12 @@ export default function App() {
   const { signature } = useSoyioAuth({ options, onEventChange });
 
   const initSignatureAttempt = () => {
-    signature(authenticateParams);
+    signature(signatureParams);
   };
 
   return (
     <View>
-      <Button title="Data access request" onPress={initDataAccessRequest} />
+      <Button title="Signature Request" onPress={initSignatureAttempt} />
     </View>
   );
 }
@@ -173,11 +173,10 @@ The `onEventChange` function can return the following objects:
 
 - **`companyId`**: The unique identifier for the company, must start with `'com_'`.
 - **`userReference`**: (Optional) A reference identifier provided by the company for the user engaging with the widget. This identifier is used in events (`onEvent` and `webhooks`) to inform the company which user the events are associated with.
-- **`userEmail`**: The user's email address. This field is optional when the flow is `'register'`, where if not provided, Soyio will prompt the user to enter their email. However, for the `'authenticate'` flow, this field should not be provided.
+- **`userEmail`**: The user's email address.
 - **`forceError`**: (Optional) Triggers specific errors for testing or debugging. Used to simulate failure scenarios.
-- **`flowTemplateId`**: Required only in the `'register'` flow, this identifier specifies the order and quantity of documents requested from the user. It must start with `'vt_'`.
-- **`identityId`**: Necessary only in the `'authenticate'` flow, this identifier must start with `'id_'` and signifies the user's identity.
-- **`customColor`**: (Optional) A hex code string that specifies the base color of the interface during either the authentication or registration flow.
+- **`templateId`**: Identifier of template. Specifies the order and quantity of documents requested from the user, as well as the mandatory data that the user is asked to share with the company. It must start with `'datmp_'`.
+- **`customColor`**: (Optional) A hex code string that specifies the base color of the interface
 - **`isSandbox`**: (Optional) Indicates if the widget should operate in sandbox mode, defaulting to `false`.
 - **`uriScheme`**: The unique redirect scheme you've set with `npx uri-scheme add ...`, critical for redirect handling in your app.
 - **`signatureTemplateId`**: Identifier of template. Specifies the order and quantity of documents to sign. It must start with `'st_'`.

@@ -4,12 +4,12 @@ import { Platform } from 'react-native';
 import { PRODUCTION_URL, SANDBOX_URL } from './constants';
 import { DisclosureParams, SoyioWidgetParams } from './types';
 
-export function getFlowUrl(
+export function getRequestUrl(
   options: SoyioWidgetParams,
   request: 'disclosure' | 'signature',
 ): string {
   const baseUrl = options.developmentUrl || (options.isSandbox ? SANDBOX_URL : PRODUCTION_URL);
-  return `${baseUrl}/${flow}`;
+  return `${baseUrl}/${request}`;
 }
 
 export function buildUrlParams(
@@ -26,7 +26,7 @@ export function buildUrlParams(
     customColor: widgetParams.customColor,
   };
 
-  const allParams = { ...baseParams, ...flowParams };
+  const allParams = { ...baseParams, ...requestParams };
 
   const queryParams = Object.entries(allParams)
     .filter(([, value]) => value)
@@ -69,7 +69,7 @@ export function parseUrlResponseParams(url: string): ParsedUrlParameters {
 
   const params = new URLSearchParams(queryString);
   const result: ParsedUrlParameters = {
-    request: requestType as 'data_access' | 'signature',
+    request: requestType as ParsedUrlParameters['request'],
   };
 
   params.forEach((value, key) => {
