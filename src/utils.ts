@@ -2,19 +2,19 @@ import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
 
 import { PRODUCTION_URL, SANDBOX_URL } from './constants';
-import { AuthenticateParams, RegisterParams, SoyioWidgetParams } from './types';
+import { DisclosureParams, SoyioWidgetParams } from './types';
 
-export function getFlowUrl(
+export function getRequestUrl(
   options: SoyioWidgetParams,
-  flow: 'authenticate' | 'register' | 'signature',
+  request: 'disclosure' | 'signature',
 ): string {
   const baseUrl = options.developmentUrl || (options.isSandbox ? SANDBOX_URL : PRODUCTION_URL);
-  return `${baseUrl}/${flow}`;
+  return `${baseUrl}/${request}`;
 }
 
 export function buildUrlParams(
   widgetParams: SoyioWidgetParams,
-  flowParams: RegisterParams | AuthenticateParams,
+  requestParams: DisclosureParams,
 ): string {
   const sdkSuffix = (Platform.OS === 'android' || Platform.OS === 'ios') ? `-${Platform.OS}` : '';
 
@@ -26,7 +26,7 @@ export function buildUrlParams(
     customColor: widgetParams.customColor,
   };
 
-  const allParams = { ...baseParams, ...flowParams };
+  const allParams = { ...baseParams, ...requestParams };
 
   const queryParams = Object.entries(allParams)
     .filter(([, value]) => value)
@@ -56,4 +56,25 @@ export function getRedirectUrl(scheme: string) {
   return `${scheme}://`;
 }
 
-export const ERROR_URL_REGEX = /[?&]error=([^&]+)/;
+type ParsedUrlParameters = {
+  request: 'data_access' | 'signature';
+  [key: string]: string;
+};
+
+export function parseUrlResponseParams(url: string): ParsedUrlParameters {
+  const regex = /^(\w+):\/\/(\w+)\?(.+)$/;
+  const match = url.match(regex);
+
+  const [, , requestType, queryString] = match;
+
+  const params = new URLSearchParams(queryString);
+  const result: ParsedUrlParameters = {
+    request: requestType as ParsedUrlParameters['request'],
+  };
+
+  params.forEach((value, key) => {
+    result[key] = value;
+  });
+
+  return result;
+}

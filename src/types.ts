@@ -9,14 +9,10 @@ export type SoyioWidgetParams = {
   developmentUrl?: string;
 }
 
-export type RegisterParams = {
-  flowTemplateId: string;
+export type DisclosureParams = {
+  templateId: string;
   userEmail?: string;
   forceError?: SoyioErrors
-}
-
-export type AuthenticateParams = {
-  identityId: string;
 }
 
 export type SignatureParams = {

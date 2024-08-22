@@ -2,7 +2,6 @@ export { useSoyioAuth } from './src/core';
 
 export type {
   SoyioWidgetParams,
-  RegisterParams,
-  AuthenticateParams,
+  DisclosureParams,
   SoyioWidgetViewPropsType,
 } from './src/types';
