@@ -2,14 +2,27 @@ import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
 
 import { PRODUCTION_URL, SANDBOX_URL } from './constants';
-import { DisclosureParams, SoyioWidgetParams } from './types';
+import { DisclosureParams, SignatureParams, SoyioWidgetParams } from './types';
+
+type RequestUrlParams = { request: 'disclosure' } & DisclosureParams
+  | { request: 'signature' } & SignatureParams;
+
+function getPath(params: RequestUrlParams) {
+  if (params.request === 'disclosure' && params.disclosureRequestId) {
+    return `disclosures/${params.disclosureRequestId}`;
+  }
+
+  return params.request;
+}
 
 export function getRequestUrl(
   options: SoyioWidgetParams,
-  request: 'disclosure' | 'signature',
+  params: RequestUrlParams,
 ): string {
   const baseUrl = options.developmentUrl || (options.isSandbox ? SANDBOX_URL : PRODUCTION_URL);
-  return `${baseUrl}/${request}`;
+  const path = getPath(params);
+
+  return `${baseUrl}/${path}`;
 }
 
 export function buildUrlParams(

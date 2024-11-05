@@ -15,7 +15,7 @@ import {
 
 export const useSoyioAuth = ({ options, onEventChange }: SoyioWidgetViewPropsType) => {
   const disclosure = useCallback(async (registerParams: DisclosureParams) => {
-    const disclosureBaseUri = getRequestUrl(options, 'disclosure');
+    const disclosureBaseUri = getRequestUrl(options, { request: 'disclosure', ...registerParams });
     const disclosureUri = `${disclosureBaseUri}?${buildUrlParams(options, registerParams)}`;
     const redirectUrl = getRedirectUrl(options.uriScheme);
     const webBrowserOptions = await getBrowserOptions();
