@@ -62,18 +62,21 @@ type ParsedUrlParameters = {
 };
 
 export function parseUrlResponseParams(url: string): ParsedUrlParameters {
-  const regex = /^(\w+):\/\/(\w+)\?(.+)$/;
+  const regex = /^([\w-]+):\/\/(\w+)\?(.+)$/;
   const match = url.match(regex);
 
   const [, , requestType, queryString] = match;
 
-  const params = new URLSearchParams(queryString);
   const result: ParsedUrlParameters = {
     request: requestType as ParsedUrlParameters['request'],
   };
 
-  params.forEach((value, key) => {
-    result[key] = value;
+  queryString.split('&').forEach((pair) => {
+    const [key, rawValue] = pair.split('=').map(decodeURIComponent);
+    if (key) {
+      const value = rawValue === 'null' ? null : rawValue;
+      result[key] = value;
+    }
   });
 
   return result;
