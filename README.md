@@ -50,7 +50,11 @@ This verification can happen in one of the following two ways:
 
 2. **Authentication**: Through an access key (passkey) or facial video. This can occur when a user has already been validated previously with Soyio.
 
-To instantiate this process in the code, it should be done in the following manner:
+To instantiate this process in the code, you have two options:
+
+#### 1.a Disclosure request on-the-fly:
+
+This doesn't require any previous setup. Given your company and disclosure template IDs, you can create disclosure requests freely when the user starts the widget:
 
 ```jsx
 import { useSoyioAuth } from "@soyio/soyio-rn-sdk";
@@ -88,6 +92,51 @@ export default function App() {
   );
 }
 ```
+
+#### 1.b Created disclosure request:
+
+You can alternatively create a disclosure request beforehand with some **matchers** to make sure the person completing the request matches the one that your application thinks it is.
+
+For more details about the use case, please refer to [the documentation](https://docs.soyio.id/).
+
+To use this option, simply specify the disclosure request ID along with any optional parameters:
+
+```jsx
+import { useSoyioAuth } from "@soyio/soyio-rn-sdk";
+
+export default function App() {
+  const options = {
+    uriScheme: "<company custom uri scheme>"
+    customColor: "<custom color>",                 // Optional
+    isSandbox: true,                               // Optional
+  };
+
+  // For initialize a disclosure request
+  const disclosureParams = {
+    disclosureRequestId: "<disclosure request id>",  // Starts with 'dreq_'
+    userEmail: "<user email>",                       // Optional
+    forceError: '<error type>',                      // Optional
+  };
+
+  const onEventChange = (event) => {
+    console.log("Event:", event);
+  };
+
+  const { disclosure } = useSoyioAuth({ options, onEventChange });
+
+  const initDisclosureRequest = () => {
+    disclosure(disclosureParams);
+  };
+
+  return (
+    <View>
+      <Button title="Disclosure request" onPress={initDisclosureRequest} />
+    </View>
+  );
+}
+```
+
+Note that user and template properties are not specified here because they must be specified when creating the disclosure request beforehand.
 
 ### 2. Signature attempt (coming soon...)
 
