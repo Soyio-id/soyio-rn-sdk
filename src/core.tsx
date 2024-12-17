@@ -2,6 +2,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useCallback } from 'react';
 
 import type {
+  AuthRequestParams,
   DisclosureParams,
   SoyioWidgetViewPropsType,
 } from './types';
@@ -20,7 +21,7 @@ export const useSoyioAuth = ({ options, onEventChange }: SoyioWidgetViewPropsTyp
     const redirectUrl = getRedirectUrl(options.uriScheme);
     const webBrowserOptions = await getBrowserOptions();
 
-    if (onEventChange) onEventChange({ type: 'open_disclosure' });
+    if (onEventChange) onEventChange({ type: 'open' });
 
     const disclosureResult = await WebBrowser.openAuthSessionAsync(
       disclosureUri,
@@ -44,5 +45,35 @@ export const useSoyioAuth = ({ options, onEventChange }: SoyioWidgetViewPropsTyp
     }
   }, [options, onEventChange]);
 
-  return { disclosure };
+  const authentication = useCallback(async (authRequestParams: AuthRequestParams) => {
+    const authBaseUri = getRequestUrl(options, { request: 'authentication', ...authRequestParams });
+    const authUri = `${authBaseUri}?${buildUrlParams(options, authRequestParams)}`;
+    const redirectUrl = getRedirectUrl(options.uriScheme);
+    const webBrowserOptions = await getBrowserOptions();
+
+    if (onEventChange) onEventChange({ type: 'open' });
+
+    const authResult = await WebBrowser.openAuthSessionAsync(
+      authUri,
+      redirectUrl,
+      webBrowserOptions,
+    );
+
+    if (onEventChange) {
+      // 'success' type means that a redirection was triggered by Soyio,
+      // but doesn't mean that the process was successful
+      if (authResult.type === 'success') {
+        const urlParams = parseUrlResponseParams(authResult.url);
+        if (authResult.url?.includes('error')) {
+          onEventChange({ type: 'error', ...urlParams });
+        } else {
+          onEventChange({ type: 'success', ...urlParams });
+        }
+      } else {
+        onEventChange(authResult);
+      }
+    }
+  }, [options, onEventChange]);
+
+  return { disclosure, authentication };
 };

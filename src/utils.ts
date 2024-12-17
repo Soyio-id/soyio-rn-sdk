@@ -2,10 +2,10 @@ import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
 
 import { PRODUCTION_URL, SANDBOX_URL } from './constants';
-import { DisclosureParams, SignatureParams, SoyioWidgetParams } from './types';
+import { AuthRequestParams, DisclosureParams, SoyioWidgetParams } from './types';
 
 type RequestUrlParams = { request: 'disclosure' } & DisclosureParams
-  | { request: 'signature' } & SignatureParams;
+  | { request: 'authentication' } & AuthRequestParams;
 
 function getPath(params: RequestUrlParams) {
   if (params.request === 'disclosure' && params.disclosureRequestId) {
@@ -27,16 +27,16 @@ export function getRequestUrl(
 
 export function buildUrlParams(
   widgetParams: SoyioWidgetParams,
-  requestParams: DisclosureParams,
+  requestParams: DisclosureParams | AuthRequestParams,
 ): string {
   const sdkSuffix = (Platform.OS === 'android' || Platform.OS === 'ios') ? `-${Platform.OS}` : '';
 
   const baseParams = {
     sdk: `rn${sdkSuffix}`,
     uriScheme: widgetParams.uriScheme,
+    customColor: widgetParams.customColor,
     companyId: widgetParams.companyId,
     userReference: widgetParams.userReference,
-    customColor: widgetParams.customColor,
   };
 
   const allParams = { ...baseParams, ...requestParams };
@@ -70,7 +70,7 @@ export function getRedirectUrl(scheme: string) {
 }
 
 type ParsedUrlParameters = {
-  request: 'data_access' | 'signature';
+  request: 'disclosure' | 'authentication';
   [key: string]: string;
 };
 
