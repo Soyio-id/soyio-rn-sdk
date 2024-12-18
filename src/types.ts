@@ -14,6 +14,10 @@ type ExistingDisclosureParams = {
   forceError?: SoyioErrors;
 }
 
+export type AuthRequestParams = {
+  authRequestId: `authreq_${string}`;
+}
+
 export type SoyioWidgetParams = {
   companyId?: string
   userReference?: string;
@@ -24,11 +28,6 @@ export type SoyioWidgetParams = {
 }
 
 export type DisclosureParams = NewDisclosureParams | ExistingDisclosureParams;
-
-export type SignatureParams = {
-  signatureTemplateId: string;
-  identityId: string;
-}
 
 export type SoyioWidgetViewPropsType = {
   options: SoyioWidgetParams

@@ -108,7 +108,7 @@ export default function App() {
   const options = {
     uriScheme: "<company custom uri scheme>"
     customColor: "<custom color>",                 // Optional
-    isSandbox: true,                               // Optional
+    isSandbox: false,                              // Optional
   };
 
   // For initialize a disclosure request
@@ -138,41 +138,37 @@ export default function App() {
 
 Note that user and template properties are not specified here because they must be specified when creating the disclosure request beforehand.
 
-### 2. Signature attempt (coming soon...)
+### 2. Auth Request
 
-The **`signature_attempt`** is a process where, using a previously created `signature_attempt_id`, a request is initiated in which a user can digitally sign a document. To sign the document, the user must be authenticated. This authentication can occur either through an access key or facial video. It's important to note that for this request, the user must have been previously verified with Soyio.
+The **`auth_request`** is a process where, using a previously created `auth_request_id`, a request is initiated in which a user can authenticate with Soyio. This authentication can occur either through an access key or facial video.
 
 ```jsx
 import { useSoyioAuth } from "@soyio/soyio-rn-sdk";
 
 export default function App() {
   const options = {
-    companyId: "<company id>",                     // Starts with 'com_'
     uriScheme: "<company custom uri scheme>"
-    userReference: "<company identifier of user>", // Optional
     customColor: "<custom color>",                 // Optional
-    isSandbox: true,                               // Optional
+    isSandbox: false,                              // Optional
   };
 
-  // For signing documents
-  const signatureParams = {
-    signatureTemplateId: "<signature template id>" // Starts with 'st_'
-    identityId: "<identity id>",                   // Starts with 'id_'
+  const authRequestParams = {
+    authRequestId: "<auth request id>" // Starts with 'authreq_'
   }
 
   const onEventChange = (event) => {
     console.log("Event:", event);
   };
 
-  const { signature } = useSoyioAuth({ options, onEventChange });
+  const { authentication } = useSoyioAuth({ options, onEventChange });
 
-  const initSignatureAttempt = () => {
-    signature(signatureParams);
+  const initAuthRequest = () => {
+    authentication(authRequestParams);
   };
 
   return (
     <View>
-      <Button title="Signature Request" onPress={initSignatureAttempt} />
+      <Button title="Auth Request" onPress={initAuthRequest} />
     </View>
   );
 }
@@ -180,12 +176,12 @@ export default function App() {
 
 The `onEventChange` function can return the following objects:
 
-1. When disclosure request is successful:
+1. When a request is successful:
 
 ```js
 {
   type: "success",
-  request: "disclosure",
+  request: "disclosure" | "authRequest",
   verificationKind: "validation" | "authentication",
   userReference: "<company-user-reference>",
   identityId: "<soyio-identity-id-of-user>",
@@ -196,7 +192,7 @@ The `onEventChange` function can return the following objects:
 
 ```js
 {
-  type: "open_disclosure";
+  type: "open";
 }
 ```
 
@@ -213,8 +209,8 @@ The `onEventChange` function can return the following objects:
 ```js
 {
   type: "error",
-  request: "disclosure",
-  error: "DENIED_CAMERA_PERMISSIONS" | "UNEXPECTED_ERROR"
+  request: "disclosure" | "authRequest",
+  error: "UNEXPECTED_ERROR"
 }
 ```
 
@@ -228,7 +224,7 @@ The `onEventChange` function can return the following objects:
 - **`customColor`**: (Optional) A hex code string that specifies the base color of the interface
 - **`isSandbox`**: (Optional) Indicates if the widget should operate in sandbox mode, defaulting to `false`.
 - **`uriScheme`**: The unique redirect scheme you've set with `npx uri-scheme add ...`, critical for redirect handling in your app.
-- **`signatureTemplateId`**: Identifier of template. Specifies the order and quantity of documents to sign. It must start with `'st_'`.
+- **`authRequestId`**: Identifier of auth request obtained when creating the `AuthRequest`. It must start with `'authreq_'`.
 
 #### Error types
 
