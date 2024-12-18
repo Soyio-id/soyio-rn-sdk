@@ -15,65 +15,59 @@ import {
 } from './utils';
 
 export const useSoyioAuth = ({ options, onEventChange }: SoyioWidgetViewPropsType) => {
-  const disclosure = useCallback(async (registerParams: DisclosureParams) => {
-    const disclosureBaseUri = getRequestUrl(options, { request: 'disclosure', ...registerParams });
-    const disclosureUri = `${disclosureBaseUri}?${buildUrlParams(options, registerParams)}`;
-    const redirectUrl = getRedirectUrl(options.uriScheme);
-    const webBrowserOptions = await getBrowserOptions();
+  const handleProcess = useCallback(
+    async (baseUri: string, params: AuthRequestParams | DisclosureParams) => {
+      const uri = `${baseUri}?${buildUrlParams(options, params)}`;
+      const redirectUrl = getRedirectUrl(options.uriScheme);
+      const webBrowserOptions = await getBrowserOptions();
 
-    if (onEventChange) onEventChange({ type: 'open' });
+      if (onEventChange) onEventChange({ type: 'open' });
 
-    const disclosureResult = await WebBrowser.openAuthSessionAsync(
-      disclosureUri,
-      redirectUrl,
-      webBrowserOptions,
-    );
+      const result = await WebBrowser.openAuthSessionAsync(
+        uri,
+        redirectUrl,
+        webBrowserOptions,
+      );
 
-    if (onEventChange) {
-      // 'success' type means that a redirection was triggered by Soyio,
-      // but doesn't mean that the process was successful
-      if (disclosureResult.type === 'success') {
-        const urlParams = parseUrlResponseParams(disclosureResult.url);
-        if (disclosureResult.url?.includes('error')) {
-          onEventChange({ type: 'error', ...urlParams });
+      if (onEventChange) {
+        // 'success' type means that a redirection was triggered by Soyio,
+        // but doesn't mean that the process was successful
+        if (result.type === 'success') {
+          const urlParams = parseUrlResponseParams(result.url);
+          if (result.url?.includes('error')) {
+            onEventChange({ type: 'error', ...urlParams });
+          } else {
+            onEventChange({ type: 'success', ...urlParams });
+          }
         } else {
-          onEventChange({ type: 'success', ...urlParams });
+          onEventChange(result);
         }
-      } else {
-        onEventChange(disclosureResult);
       }
-    }
-  }, [options, onEventChange]);
+    },
+    [options, onEventChange],
+  );
 
-  const authentication = useCallback(async (authRequestParams: AuthRequestParams) => {
-    const authBaseUri = getRequestUrl(options, { request: 'authentication', ...authRequestParams });
-    const authUri = `${authBaseUri}?${buildUrlParams(options, authRequestParams)}`;
-    const redirectUrl = getRedirectUrl(options.uriScheme);
-    const webBrowserOptions = await getBrowserOptions();
+  const disclosure = useCallback(
+    async (registerParams: DisclosureParams) => {
+      const disclosureBaseUri = getRequestUrl(options, {
+        request: 'disclosure',
+        ...registerParams,
+      });
+      handleProcess(disclosureBaseUri, registerParams);
+    },
+    [options, handleProcess],
+  );
 
-    if (onEventChange) onEventChange({ type: 'open' });
-
-    const authResult = await WebBrowser.openAuthSessionAsync(
-      authUri,
-      redirectUrl,
-      webBrowserOptions,
-    );
-
-    if (onEventChange) {
-      // 'success' type means that a redirection was triggered by Soyio,
-      // but doesn't mean that the process was successful
-      if (authResult.type === 'success') {
-        const urlParams = parseUrlResponseParams(authResult.url);
-        if (authResult.url?.includes('error')) {
-          onEventChange({ type: 'error', ...urlParams });
-        } else {
-          onEventChange({ type: 'success', ...urlParams });
-        }
-      } else {
-        onEventChange(authResult);
-      }
-    }
-  }, [options, onEventChange]);
+  const authentication = useCallback(
+    async (authRequestParams: AuthRequestParams) => {
+      const authBaseUri = getRequestUrl(options, {
+        request: 'authentication',
+        ...authRequestParams,
+      });
+      handleProcess(authBaseUri, authRequestParams);
+    },
+    [options, handleProcess],
+  );
 
   return { disclosure, authentication };
 };

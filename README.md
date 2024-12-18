@@ -200,7 +200,7 @@ The `onEventChange` function can return the following objects:
 
 ```js
 {
-  type: "dismiss";
+  type: "cancel";
 }
 ```
 
