@@ -61,7 +61,7 @@ export const useSoyioAuth = ({ options, onEventChange }: SoyioWidgetViewPropsTyp
   const authentication = useCallback(
     async (authRequestParams: AuthRequestParams) => {
       const authBaseUri = getRequestUrl(options, {
-        request: 'authentication',
+        request: 'authentication_request',
         ...authRequestParams,
       });
       handleProcess(authBaseUri, authRequestParams);
