@@ -5,7 +5,7 @@ import { PRODUCTION_URL, SANDBOX_URL } from './constants';
 import { AuthRequestParams, DisclosureParams, SoyioWidgetParams } from './types';
 
 type RequestUrlParams = { request: 'disclosure' } & DisclosureParams
-  | { request: 'authentication' } & AuthRequestParams;
+  | { request: 'authentication_request' } & AuthRequestParams;
 
 function getPath(params: RequestUrlParams) {
   if (params.request === 'disclosure' && params.disclosureRequestId) {
