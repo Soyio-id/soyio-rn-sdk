@@ -6,7 +6,7 @@ import type {
 } from '../types';
 
 import { getPlatformSuffix } from './platform';
-import { isDisclosureRequest } from './type-guards';
+import { isExistingDisclosureRequest } from './type-guards';
 
 const WIDGET_PATH_PREFIX = 'widget';
 
@@ -22,8 +22,9 @@ function determineRequestPath(
   requestParams: DisclosureParams | AuthRequestParams,
 ): string {
   if (requestType === 'disclosure') {
-    if (isDisclosureRequest(requestParams) && requestParams.disclosureRequestId) {
-      return `disclosures/${requestParams.disclosureRequestId}`;
+    const disclosureParams = requestParams as DisclosureParams;
+    if (isExistingDisclosureRequest(disclosureParams)) {
+      return `disclosures/${disclosureParams.disclosureRequestId}`;
     }
     return 'disclosure';
   }
@@ -40,12 +41,15 @@ function buildQueryParams(params: Record<string, unknown>): string {
 }
 
 function createBaseParams(options: SoyioWidgetOptions): Record<string, string> {
-  return {
+  const baseParams: Record<string, string> = {
     sdk: `rn${getPlatformSuffix()}`,
-    companyId: options.companyId,
-    userReference: options.userReference,
     rn_webview: 'true',
   };
+
+  if ('companyId' in options) baseParams.companyId = options.companyId;
+  if ('userReference' in options) baseParams.userReference = options.userReference;
+
+  return baseParams;
 }
 
 /**

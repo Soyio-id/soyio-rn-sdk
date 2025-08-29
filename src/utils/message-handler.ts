@@ -4,10 +4,12 @@ import { handlePasskeyAuthentication, handlePasskeyRequired } from '../passkey-b
 import type {
   AuthRequestParams,
   DisclosureParams,
+  PasskeyRegistrationRequired,
   SoyioWidgetOptions,
   WebViewEvent,
-  WebviewPasskeyRequestEvent,
 } from '../types';
+
+import { isAuthenticationRequest, isDisclosureRequest } from './type-guards';
 
 interface MessageHandlerDependencies {
   options: SoyioWidgetOptions;
@@ -25,20 +27,24 @@ function handleSuccessEvent(onSuccess?: () => void): void {
   onSuccess?.();
 }
 
-function handlePasskeyEvent(
-  eventData: WebviewPasskeyRequestEvent,
+function handlePasskeyRequiredEvent(
+  eventData: PasskeyRegistrationRequired,
   dependencies: MessageHandlerDependencies,
 ): void {
-  const { options, webViewRef } = dependencies;
+  const { options, webViewRef, requestParams } = dependencies;
 
-  handlePasskeyRequired({
-    companyId: options.companyId || '',
-    sessionToken: eventData.sessionToken,
-    uriScheme: options.uriScheme,
-    isSandbox: options.isSandbox,
-    developmentUrl: options.developmentUrl,
-    onComplete: () => postMessageToWebView(webViewRef, 'PASSKEY_REGISTERED'),
-  });
+  if (!isDisclosureRequest(requestParams)) return;
+
+  if ('companyId' in options) {
+    handlePasskeyRequired({
+      companyId: options.companyId,
+      sessionToken: eventData.sessionToken,
+      uriScheme: options.uriScheme,
+      isSandbox: options.isSandbox,
+      developmentUrl: options.developmentUrl,
+      onComplete: () => postMessageToWebView(webViewRef, 'PASSKEY_REGISTERED'),
+    });
+  }
 }
 
 function handlePasskeyAuthenticationEvent(
@@ -46,15 +52,15 @@ function handlePasskeyAuthenticationEvent(
 ): void {
   const { options, webViewRef, requestParams } = dependencies;
 
-  if ('authRequestId' in requestParams) {
-    handlePasskeyAuthentication({
-      authRequestId: requestParams.authRequestId,
-      uriScheme: options.uriScheme,
-      isSandbox: options.isSandbox,
-      developmentUrl: options.developmentUrl,
-      onComplete: () => postMessageToWebView(webViewRef, 'PASSKEY_AUTHENTICATED'),
-    });
-  }
+  if (!isAuthenticationRequest(requestParams)) return;
+
+  handlePasskeyAuthentication({
+    authRequestId: requestParams.authRequestId,
+    uriScheme: options.uriScheme,
+    isSandbox: options.isSandbox,
+    developmentUrl: options.developmentUrl,
+    onComplete: () => postMessageToWebView(webViewRef, 'PASSKEY_AUTHENTICATED'),
+  });
 }
 
 /**
@@ -82,7 +88,7 @@ export function buildMessageHandler(
         break;
 
       case 'PASSKEY_REQUIRED':
-        handlePasskeyEvent(eventData, dependencies);
+        handlePasskeyRequiredEvent(eventData, dependencies);
         break;
 
       case 'PASSKEY_AUTHENTICATION_REQUIRED':
