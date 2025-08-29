@@ -80,23 +80,28 @@ export function buildMessageHandler(
   };
 
   return (event: WebViewMessageEvent): void => {
-    const eventData = JSON.parse(event.nativeEvent.data) as WebViewEvent;
+    try {
+      const eventData = JSON.parse(event.nativeEvent.data) as WebViewEvent;
 
-    switch (eventData.type) {
-      case 'SUCCESS':
-        handleSuccessEvent(onSuccess);
-        break;
+      switch (eventData.type) {
+        case 'SUCCESS':
+          handleSuccessEvent(onSuccess);
+          break;
 
-      case 'PASSKEY_REQUIRED':
-        handlePasskeyRequiredEvent(eventData, dependencies);
-        break;
+        case 'PASSKEY_REQUIRED':
+          handlePasskeyRequiredEvent(eventData, dependencies);
+          break;
 
-      case 'PASSKEY_AUTHENTICATION_REQUIRED':
-        handlePasskeyAuthenticationEvent(dependencies);
-        break;
+        case 'PASSKEY_AUTHENTICATION_REQUIRED':
+          handlePasskeyAuthenticationEvent(dependencies);
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error parsing message from Soyio widget:', error);
     }
   };
 }
