@@ -18,18 +18,37 @@ export type AuthRequestParams = {
   authRequestId: `authreq_${string}`;
 }
 
-export type SoyioWidgetParams = {
+export type SoyioWidgetOptions = {
+  uriScheme: string;
   companyId?: string
   userReference?: string;
-  uriScheme: string;
   isSandbox?: boolean;
-  customColor?: string;
   developmentUrl?: string;
 }
 
 export type DisclosureParams = NewDisclosureParams | ExistingDisclosureParams;
 
-export type SoyioWidgetViewPropsType = {
-  options: SoyioWidgetParams
-  onEventChange?: (event: { type: string; url?: string, message?: string }) => void;
+export type WebviewSuccessEvent = {
+  type: 'SUCCESS';
 }
+
+export type WebviewPasskeyRequestEvent = {
+  type: 'PASSKEY_REQUIRED';
+  sessionToken: string;
+}
+
+export type WebviewPasskeyAuthenticationRequiredEvent = {
+  type: 'PASSKEY_AUTHENTICATION_REQUIRED';
+}
+
+export type WebViewEvent =
+  | WebviewSuccessEvent
+  | WebviewPasskeyRequestEvent
+  | WebviewPasskeyAuthenticationRequiredEvent;
+
+export type SoyioWidgetProps = {
+  options: SoyioWidgetOptions;
+  requestType: 'disclosure' | 'authentication_request';
+  requestParams: DisclosureParams | AuthRequestParams;
+  onSuccess?: () => void;
+};
