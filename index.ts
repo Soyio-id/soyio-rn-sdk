@@ -1,4 +1,9 @@
-export { SoyioWidget } from './src/core';
+export { SoyioWidget } from './src/webview';
+
+export {
+  openDisclosure,
+  openAuthenticationRequest,
+} from './src/inapp-browser';
 
 export type {
   SoyioWidgetOptions,
@@ -6,3 +11,8 @@ export type {
   AuthRequestParams,
   SoyioWidgetProps,
 } from './src/types';
+
+export type {
+  OpenDisclosureParams,
+  OpenAuthRequestParams,
+} from './src/inapp-browser';
