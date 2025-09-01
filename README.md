@@ -14,7 +14,7 @@
 
 ## Installation
 
-- Install using npm! (or your favorite package manager)
+- Install using npm (or your favorite package manager)
 
 ```sh
 # Using npm
@@ -24,14 +24,14 @@ npm install @soyio/soyio-rn-sdk
 yarn add @soyio/soyio-rn-sdk
 ```
 
-- For **React Native CLI** projects, you'll also need to install `react-native-webview`:
+- You'll also need to install the required peer dependencies:
 
 ```sh
 # Using npm
-npm install react-native-webview
+npm install react-native-webview react-native-inappbrowser-reborn
 
 # Using yarn
-yarn add react-native-webview
+yarn add react-native-webview react-native-inappbrowser-reborn
 ```
 
 **iOS Setup:** Run `cd ios && pod install` to install native dependencies.
@@ -59,7 +59,12 @@ Add the following permission to your `ios/YourApp/Info.plist` file to enable cam
 
 ## Usage
 
-`Soyio React Native` exports a single component called `SoyioWidget`. This component renders a WebView that displays the Soyio verification flow within your app.
+`Soyio React Native` provides two ways to integrate the Soyio verification flow:
+
+1. **WebView Component**: A `SoyioWidget` component that renders a WebView within your app.
+2. **InAppBrowser Functions**: Direct functions that open the verification flow in an in-app browser.
+
+## WebView Integration
 
 ### 1. Disclosure Request
 
@@ -92,7 +97,6 @@ export default function App() {
   const disclosureParams = {
     templateId: "<template id>", // Starts with 'dtpl_'
     userEmail: "<user email>", // Optional
-    forceError: "<error type>", // Optional
   };
 
   const handleSuccess = () => {
@@ -139,7 +143,6 @@ export default function App() {
   // For initialize a disclosure request
   const disclosureParams = {
     disclosureRequestId: "<disclosure request id>", // Starts with 'dreq_'
-    forceError: "<error type>", // Optional
   };
 
   const handleSuccess = () => {
@@ -214,27 +217,105 @@ The `SoyioWidget` component supports the following event handlers:
 
 - **`onSuccess`**: Called when the verification/authentication process completes successfully
 
+## InAppBrowser Integration
+
+For cases where you prefer to open the verification flow in an in-app browser instead of a WebView, you can use the direct function approach.
+
+### 1. Disclosure Request (InAppBrowser)
+
+#### 1.a Disclosure request on-the-fly:
+
+```jsx
+import { openDisclosure } from "@soyio/soyio-rn-sdk";
+
+async function handleDisclosure = async () => {
+  const options = {
+    uriScheme: "<your-app-scheme>", // Required: Your app's URI scheme
+    companyId: "<company id>", // Optional: Starts with 'com_'
+    userReference: "<company identifier of user>", // Optional
+    isSandbox: true, // Optional
+  };
+
+  const disclosureParams = {
+    templateId: "<template id>", // Starts with 'dtpl_'
+    userEmail: "<user email>", // Optional
+  };
+
+  await openDisclosure({
+    options,
+    requestParams: disclosureParams,
+    onComplete: () => console.log("Disclosure completed successfully!"),
+    onCancel: () => console.log("Disclosure was cancelled by user"),
+  });
+};
+```
+
+#### 1.b Created disclosure request:
+
+```jsx
+import { openDisclosure } from "@soyio/soyio-rn-sdk";
+
+const handleDisclosure = async () => {
+  const options = {
+    uriScheme: "<your-app-scheme>", // Required: Your app's URI scheme
+    isSandbox: false, // Optional
+  };
+
+  const disclosureParams = {
+    disclosureRequestId: "<disclosure request id>", // Starts with 'dreq_'
+  };
+
+  await openDisclosure({
+    options,
+    requestParams: disclosureParams,
+    onComplete: () => console.log("Disclosure completed successfully!"),
+    onCancel: () => console.log("Disclosure was cancelled by user"),
+  });
+};
+```
+
+### 2. Auth Request (InAppBrowser)
+
+```jsx
+import { openAuthenticationRequest } from "@soyio/soyio-rn-sdk";
+
+const handleAuthRequest = async () => {
+  const options = {
+    uriScheme: "<your-app-scheme>", // Required: Your app's URI scheme
+    isSandbox: false, // Optional
+  };
+
+  const authRequestParams = {
+    authRequestId: "<auth request id>", // Starts with 'authreq_'
+  };
+
+  await openAuthenticationRequest({
+    options,
+    requestParams: authRequestParams,
+    onComplete: () => console.log("Authentication completed successfully!"),
+    onCancel: () => console.log("Authentication was cancelled by user"),
+  });
+};
+```
+
+### Event Handling (InAppBrowser)
+
+The InAppBrowser functions support the following callback handlers:
+
+- **`onComplete`**: Called when the verification/authentication process completes successfully
+- **`onCancel`**: Called when the user cancels the process or navigates away
+
 #### Attribute Descriptions
 
 - **`uriScheme`**: (Required) The URI scheme for your application, used for deep linking and navigation.
 - **`companyId`**: (Optional) The unique identifier for the company, must start with `'com_'`.
 - **`userReference`**: (Optional) A reference identifier provided by the company for the user engaging with the widget. This identifier is used in events (`onEvent` and `webhooks`) to inform the company which user the events are associated with.
 - **`userEmail`**: (Optional) The user's email address.
-- **`forceError`**: (Optional) Triggers specific errors for testing or debugging. Used to simulate failure scenarios.
 - **`templateId`**: (Required for new disclosure requests) Identifier of template. Specifies the order and quantity of documents requested from the user, as well as the mandatory data that the user is asked to share with the company. It must start with `'dtpl_'`.
 - **`isSandbox`**: (Optional) Indicates if the widget should operate in sandbox mode, defaulting to `false`.
 - **`developmentUrl`**: (Optional) Custom development URL for testing purposes.
 - **`authRequestId`**: (Required for authentication requests) Identifier of auth request obtained when creating the `AuthRequest`. It must start with `'authreq_'`.
 - **`disclosureRequestId`**: (Required for existing disclosure requests) Identifier of an existing disclosure request. It must start with `'dreq_'`.
-
-#### Error types
-
-The `forceError` parameter can simulate the following error conditions:
-
-- `'user_exists'`: Triggers an error indicating that a user with the given credentials already exists in the system.
-- `'facial_validation_error'`: Simulates a failure in the facial video liveness test, indicating the system could not verify the user's live presence.
-- `'document_validation_error'`: Indicates an issue with validating the photos of the documents provided by the user.
-- `'unknown_error'`: Generates a generic error, representing an unspecified problem.
 
 #### TypeScript support
 
@@ -251,33 +332,6 @@ yarn install
 To test locally, I recommend packaging the app. Remember to build the library first:
 
 ```sh
-yarn build
-yarn pack
+npm run build
+npm pack
 ```
-
-This will create a `soyio-soyio-rn-sdk-x.x.x.tgz` file (with the corresponding package version). Now, go to another directory and create a React Native app (using Expo, perhaps). After creating the new application, add the following dependency to its `package.json` file:
-
-```json
-{
-  "dependencies": {
-    ...,
-    "@soyio/soyio-rn-sdk": "file:./path/to/soyio-soyio-rn-sdk-x.x.x.tgz",
-    ...
-  }
-}
-```
-
-Where `./path/to/soyio-soyio-rn-sdk-x.x.x.tgz` corresponds to the path to the `.tgz` file created on the `yarn pack` step. After running `yarn install` on the new React Native app, you should be able to use the `SoyioWidget` component directly in your app.
-
-If you want to create a new _release_, you can run:
-
-```sh
-git switch main
-yarn bump! <major|minor|patch>
-```
-
-This will create a new branch with the updated version from `main`.
-
-## Acknowledgements
-
-This implementation was written based on the input and experience of [**fintoc**](https://github.com/fintoc-com/fintoc-react-native) integrating the WebView using React Native, which served as a good starting point for the general idea of this library.
