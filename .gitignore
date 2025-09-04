@@ -3,10 +3,8 @@
 # dependencies
 node_modules/
 
-# Expo
-.expo/
+# Package
 package/
-web-build/
 
 # Native
 *.orig.*
@@ -34,6 +32,12 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Package files
+*.tgz
+
 # For iCloud Drive
 node_modules.nosync
 node_modules
+
+# Vscode
+.vscode/
