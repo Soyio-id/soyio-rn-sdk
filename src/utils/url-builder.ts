@@ -52,9 +52,6 @@ function createBaseParams(options: SoyioWidgetOptions): Record<string, string> {
   return baseParams;
 }
 
-/**
- * Builds the complete URL for Soyio widget with query parameters
- */
 export function buildUrl(
   options: SoyioWidgetOptions,
   requestType: 'disclosure' | 'authentication_request',

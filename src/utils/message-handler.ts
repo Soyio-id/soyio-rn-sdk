@@ -63,9 +63,6 @@ function handlePasskeyAuthenticationEvent(
   });
 }
 
-/**
- * Creates a message handler for WebView events
- */
 export function buildMessageHandler(
   options: SoyioWidgetOptions,
   webViewRef: React.RefObject<WebView>,
