@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import type { WebView, WebViewMessageEvent } from 'react-native-webview';
 
 import { handlePasskeyAuthentication, handlePasskeyRequired } from '../passkey-bridge';
@@ -20,7 +21,21 @@ interface MessageHandlerDependencies {
 
 function postMessageToWebView(webViewRef: React.RefObject<WebView>, messageType: string): void {
   const message = JSON.stringify({ type: messageType });
-  webViewRef.current?.postMessage(message);
+
+  if (Platform.OS === 'android') {
+    webViewRef.current.injectJavaScript(`
+      try {
+        const message = ${JSON.stringify(message)};
+        window.postMessage?.(message, '*');
+        document.dispatchEvent?.(new MessageEvent('message', { data: message }));
+      } catch (e) {
+        console.warn('Failed to send message to WebView:', e);
+      }
+      true;
+    `);
+  } else {
+    webViewRef.current.postMessage(message);
+  }
 }
 
 function handleSuccessEvent(onSuccess?: () => void): void {
