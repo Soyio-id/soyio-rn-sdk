@@ -40,11 +40,14 @@ function buildQueryParams(params: Record<string, unknown>): string {
   return queryPairs.join('&');
 }
 
-function createBaseParams(options: SoyioWidgetOptions): Record<string, string> {
-  const baseParams: Record<string, string> = {
-    sdk: `rn${getPlatformSuffix()}`,
-    rn_webview: 'true',
-  };
+function createBaseParams(
+  options: SoyioWidgetOptions,
+  isWebview = true,
+): Record<string, string> {
+  const baseParams: Record<string, string> = { sdk: `rn${getPlatformSuffix()}` };
+
+  if (options.uriScheme) baseParams.uriScheme = options.uriScheme;
+  if (isWebview) baseParams.rn_webview = 'true';
 
   if ('companyId' in options) baseParams.companyId = options.companyId;
   if ('userReference' in options) baseParams.userReference = options.userReference;
@@ -56,12 +59,13 @@ export function buildUrl(
   options: SoyioWidgetOptions,
   requestType: 'disclosure' | 'authentication_request',
   requestParams: DisclosureParams | AuthRequestParams,
+  isWebview = true,
 ): string {
   const baseUrl = determineBaseUrl(options);
   const path = determineRequestPath(requestType, requestParams);
   const fullPath = `${baseUrl}/${WIDGET_PATH_PREFIX}/${path}`;
 
-  const baseParams = createBaseParams(options);
+  const baseParams = createBaseParams(options, isWebview);
   const allParams = { ...baseParams, ...requestParams };
   const queryString = buildQueryParams(allParams);
 

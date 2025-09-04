@@ -28,6 +28,7 @@ export const SoyioWidget = ({
       source={{ uri: buildUrl(options, requestType, requestParams) }}
       originWhitelist={[...SOYIO_BASE_URLS, options.developmentUrl].filter(Boolean)}
       onMessage={buildMessageHandler(options, webViewRef, requestParams, onSuccess)}
+      javaScriptEnabled={true}
       />
     </View>
   );
