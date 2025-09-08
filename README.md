@@ -62,6 +62,7 @@ Add the following permission to your `android/app/src/main/AndroidManifest.xml` 
 
 ```xml
 <uses-permission android:name="android.permission.CAMERA" />
+<uses-feature android:name="android.hardware.camera" android:required="true" />
 ```
 
 ## Usage
