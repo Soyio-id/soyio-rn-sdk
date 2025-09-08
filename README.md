@@ -57,6 +57,13 @@ Add the following permission to your `ios/YourApp/Info.plist` file to enable cam
 <string>This app needs access to camera for document verification</string>
 ```
 
+### Android Permissions
+Add the following permission to your `android/app/src/main/AndroidManifest.xml` file within the `<manifest>` tag:
+
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+```
+
 ## Usage
 
 `Soyio React Native` provides two ways to integrate the Soyio verification flow:
