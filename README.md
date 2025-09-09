@@ -236,7 +236,7 @@ For cases where you prefer to open the verification flow in an in-app browser in
 ```jsx
 import { openDisclosure } from "@soyio/soyio-rn-sdk";
 
-async function handleDisclosure = async () => {
+const handleDisclosure = async () => {
   const options = {
     uriScheme: "<your-app-scheme>", // Required: Your app's URI scheme
     companyId: "<company id>", // Optional: Starts with 'com_'
