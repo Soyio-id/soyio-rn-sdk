@@ -3,6 +3,7 @@ import type {
   FaceTecCredentialsResponse,
   FaceTecSessionTokenResponse,
 } from '../types';
+import { getCurrentDateISO } from '../utils/date';
 
 export async function getFaceTecCredentials(
   baseUrl: string,
@@ -14,6 +15,7 @@ export async function getFaceTecCredentials(
     method: 'GET',
     headers: {
       Authorization: soyioSessionToken,
+      'X-Api-Version': getCurrentDateISO(),
     },
   });
 
@@ -48,6 +50,7 @@ export async function getFaceTecSessionToken(
     method: 'GET',
     headers: {
       Authorization: soyioSessionToken,
+      'X-Api-Version': getCurrentDateISO(),
     },
   });
 

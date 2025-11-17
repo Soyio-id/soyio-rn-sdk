@@ -101,6 +101,7 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
         request.addValue(soyioAuthToken, forHTTPHeaderField: "Authorization")
         request.addValue(self.sessionId, forHTTPHeaderField: "X-Facetec-Session-Id")
         request.addValue(FaceTec.sdk.createFaceTecAPIUserAgentString(self.sessionId), forHTTPHeaderField: "X-Facetec-User-Agent")
+        request.addValue(SoyioUtils.getCurrentDateISO(), forHTTPHeaderField: "X-Api-Version")
 
         let session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: OperationQueue.main)
         latestNetworkRequest = session.dataTask(with: request as URLRequest, completionHandler: { data, response, error in

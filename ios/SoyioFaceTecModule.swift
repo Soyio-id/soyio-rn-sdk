@@ -12,7 +12,6 @@ class SoyioFaceTecModule: RCTEventEmitter {
 
     private var currentPhotoIDProcessor: SoyioPhotoIDMatchProcessor?
     private var currentIDOnlyProcessor: SoyioIDOnlyProcessor?
-    private var isSDKInitialized = false
 
     @objc
     override static func requiresMainQueueSetup() -> Bool {
@@ -60,22 +59,18 @@ class SoyioFaceTecModule: RCTEventEmitter {
             return
         }
 
-        // Check if already initialized
         let status = FaceTec.sdk.getStatus()
         if status == .initialized {
-            self.isSDKInitialized = true
             resolver(["success": true])
             return
         }
 
-        // Initialize SDK with custom credentials
         FacetecConfig.initializeWithCustomCredentials(
             deviceKey: deviceKey,
             publicKey: publicKey,
             productionKey: productionKey
         ) { success in
             if success {
-                self.isSDKInitialized = true
                 resolver(["success": true])
             } else {
                 let sdkStatus = FaceTec.sdk.getStatus()
@@ -96,13 +91,11 @@ class SoyioFaceTecModule: RCTEventEmitter {
             return
         }
 
-        // Find the topmost presented view controller
         var topViewController = viewController
         while let presented = topViewController.presentedViewController {
             topViewController = presented
         }
 
-        // Create and start the processor
         self.currentPhotoIDProcessor = SoyioPhotoIDMatchProcessor(
             facetecSessionToken: facetecSessionToken,
             soyioAuthToken: soyioSessionToken,
@@ -110,7 +103,6 @@ class SoyioFaceTecModule: RCTEventEmitter {
             baseUrl: baseUrl,
             fromViewController: topViewController,
             livenessSuccessHandler: { [weak self] in
-                // Emit event to React Native when liveness check succeeds
                 self?.sendEvent(withName: "onLivenessSuccess", body: [:])
             },
             completionHandler: { success, error in
@@ -161,13 +153,11 @@ class SoyioFaceTecModule: RCTEventEmitter {
             return
         }
 
-        // Find the topmost presented view controller
         var topViewController = viewController
         while let presented = topViewController.presentedViewController {
             topViewController = presented
         }
 
-        // Create and start the ID-only processor
         self.currentIDOnlyProcessor = SoyioIDOnlyProcessor(
             facetecSessionToken: facetecSessionToken,
             soyioAuthToken: soyioSessionToken,
