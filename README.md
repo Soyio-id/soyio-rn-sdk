@@ -65,6 +65,24 @@ Add the following permission and feature declaration to your `android/app/src/ma
 <uses-feature android:name="android.hardware.camera" android:required="true" />
 ```
 
+### iOS FaceTec Native Integration
+
+This SDK includes native FaceTec integration for iOS. After installing the package and peer dependencies, run:
+
+```sh
+cd ios && pod install
+```
+
+**Troubleshooting:**
+
+If you encounter the error `SoyioFaceTecModule not available`, ensure:
+
+1. You've run `pod install` in the iOS directory
+2. Clean build folder in Xcode: **Product → Clean Build Folder**
+3. Rebuild the app
+
+The native module should be automatically linked via React Native autolinking.
+
 ## Usage
 
 `Soyio React Native` provides two ways to integrate the Soyio verification flow:
