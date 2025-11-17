@@ -1,7 +1,8 @@
 //.npmignore
 *
+!package/**
 !index.ts
-!package/**/*.tsx
-!package/**/*.ts
-!package/**/*.js
-!package/**/*.jsx
+!ios/**
+!react-native.config.js
+!soyio_rn_sdk.podspec
+!README.md
