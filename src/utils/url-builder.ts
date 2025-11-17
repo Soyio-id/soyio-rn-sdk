@@ -10,7 +10,7 @@ import { isExistingDisclosureRequest } from './type-guards';
 
 const WIDGET_PATH_PREFIX = 'widget';
 
-function determineBaseUrl(options: SoyioWidgetOptions): string {
+export function determineBaseUrl(options: SoyioWidgetOptions): string {
   if (options.developmentUrl) {
     return options.developmentUrl;
   }

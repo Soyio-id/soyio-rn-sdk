@@ -1,7 +1,7 @@
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 
-import { PRODUCTION_URL, SANDBOX_URL } from './constants';
-import { IN_APP_BROWSER_OPTIONS } from './inapp-browser';
+import { PRODUCTION_URL, SANDBOX_URL } from '../constants';
+import { IN_APP_BROWSER_OPTIONS } from '../inapp-browser';
 
 export interface PasskeyRequiredParams {
   companyId: string;

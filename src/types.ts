@@ -4,6 +4,57 @@ export type SoyioErrors =
   | 'document_validation_error'
   | 'unknown_error';
 
+export interface FaceTecCredentials {
+  deviceKey: string;
+  publicKey: string;
+  productionKey: string;
+}
+
+export interface FaceTecCredentialsResponse {
+  device_key_identifier: string;
+  public_face_scan_encryption_key: string;
+  production_key: string;
+}
+
+export interface FaceTecSessionTokenResponse {
+  sessionToken: string;
+}
+
+export interface FaceTecBaseParams {
+  soyioSessionToken: string;
+  disclosureRequestToken: string;
+  baseUrl: string;
+  onComplete?: () => void;
+}
+
+export type FaceTecLivenessConfig = FaceTecBaseParams & {
+  mode: 'liveness-and-id';
+  onLivenessSuccess?: () => void;
+};
+
+export type FaceTecIDOnlyConfig = FaceTecBaseParams & {
+  mode: 'id-only';
+};
+
+export type FaceTecVerificationConfig = FaceTecLivenessConfig | FaceTecIDOnlyConfig;
+
+/** @deprecated Use FaceTecLivenessConfig instead */
+export interface FaceTecLivenessParams {
+  soyioSessionToken: string;
+  disclosureRequestToken: string;
+  baseUrl: string;
+  onLivenessSuccess?: () => void;
+  onComplete?: () => void;
+}
+
+/** @deprecated Use FaceTecIDOnlyConfig instead */
+export interface FaceTecIDOnlyParams {
+  soyioSessionToken: string;
+  disclosureRequestToken: string;
+  baseUrl: string;
+  onComplete?: () => void;
+}
+
 type NewDisclosureParams = {
   templateId: string;
   disclosureRequestId?: never;
@@ -54,9 +105,16 @@ export type PasskeyAuthRequired = {
   type: 'PASSKEY_AUTHENTICATION_REQUIRED';
 }
 
+export type FaceTecRequired = {
+  type: 'FACETEC_LIVENESS_PHOTO_ID_REQUIRED' | 'FACETEC_ID_ONLY_REQUIRED';
+  sessionToken: string;
+  requestableToken: string;
+}
+
 export type WidgetDisclosureEvents =
   | WebviewSuccessEvent
-  | PasskeyRegistrationRequired;
+  | PasskeyRegistrationRequired
+  | FaceTecRequired;
 
 export type WidgetAuthRequestEvents =
   | WebviewSuccessEvent
