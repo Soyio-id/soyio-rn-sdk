@@ -38,23 +38,6 @@ export type FaceTecIDOnlyConfig = FaceTecBaseParams & {
 
 export type FaceTecVerificationConfig = FaceTecLivenessConfig | FaceTecIDOnlyConfig;
 
-/** @deprecated Use FaceTecLivenessConfig instead */
-export interface FaceTecLivenessParams {
-  soyioSessionToken: string;
-  disclosureRequestToken: string;
-  baseUrl: string;
-  onLivenessSuccess?: () => void;
-  onComplete?: () => void;
-}
-
-/** @deprecated Use FaceTecIDOnlyConfig instead */
-export interface FaceTecIDOnlyParams {
-  soyioSessionToken: string;
-  disclosureRequestToken: string;
-  baseUrl: string;
-  onComplete?: () => void;
-}
-
 type NewDisclosureParams = {
   templateId: string;
   disclosureRequestId?: never;
