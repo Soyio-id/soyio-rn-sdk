@@ -14,6 +14,17 @@ package/
 *.key
 *.mobileprovision
 
+# Android / Gradle
+*.iml
+android/.gradle/
+android/.idea/
+android/local.properties
+android/captures/
+android/.cxx/
+android/.externalNativeBuild/
+android/**/build/
+android/**/generated/
+
 # iOS Frameworks - Runtime caches
 ios/Frameworks/**/cache_*/
 
@@ -45,5 +56,9 @@ node_modules
 # Vscode
 .vscode/
 
-# CLAUDE
+# JetBrains
+.idea/
+
+# Agent files
 CLAUDE.md
+AGENTS.md
