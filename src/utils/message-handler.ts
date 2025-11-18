@@ -13,7 +13,7 @@ import type {
 } from '../types';
 
 import { isAuthenticationRequest, isDisclosureRequest } from './type-guards';
-import { determineBaseUrl } from './url-builder';
+import { resolveBaseUrl } from './url-builder';
 
 interface MessageHandlerDependencies {
   options: SoyioWidgetOptions;
@@ -89,7 +89,7 @@ function handleFaceTecRequiredEvent(
 
   if (!isDisclosureRequest(requestParams)) return;
 
-  const baseUrl = determineBaseUrl(options);
+  const baseUrl = resolveBaseUrl(options);
   const isLivenessAndPhotoIDMode = eventData.type === 'FACETEC_LIVENESS_PHOTO_ID_REQUIRED';
 
   const config = isLivenessAndPhotoIDMode
