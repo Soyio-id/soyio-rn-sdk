@@ -1,7 +1,3 @@
-//
-// SoyioPhotoIDMatchProcessor - Photo ID Match using Soyio Backend
-//
-
 import UIKit
 import Foundation
 import FaceTecSDK

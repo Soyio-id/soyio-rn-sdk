@@ -1,7 +1,3 @@
-//
-// SoyioFaceTecModule.m - Objective-C bridge for React Native
-//
-
 #import <React/RCTBridgeModule.h>
 
 @interface RCT_EXTERN_MODULE(SoyioFaceTecModule, NSObject)

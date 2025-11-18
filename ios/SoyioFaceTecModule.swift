@@ -1,7 +1,3 @@
-//
-// SoyioFaceTecModule - React Native Native Module for FaceTec Integration
-//
-
 import UIKit
 import Foundation
 import FaceTecSDK

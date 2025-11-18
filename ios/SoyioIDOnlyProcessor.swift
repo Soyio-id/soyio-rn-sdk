@@ -1,7 +1,3 @@
-//
-// SoyioIDOnlyProcessor - ID-Only Validation using Soyio Backend
-//
-
 import UIKit
 import Foundation
 import FaceTecSDK
