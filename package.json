@@ -4,6 +4,8 @@
   "license": "MIT",
   "author": "Ignacio Méndez",
   "main": "./package/index.js",
+  "description": "Soyio React Native SDK",
+  "homepage": "https://github.com/Soyio-id/soyio-rn-sdk",
   "types": "./package/index.d.ts",
   "scripts": {
     "bump!": "sh scripts/bump.sh",
