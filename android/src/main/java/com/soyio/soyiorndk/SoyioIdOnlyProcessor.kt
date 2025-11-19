@@ -36,7 +36,7 @@ class SoyioIdOnlyProcessor(
   ) {
     if (idScanResult.status != FaceTecIDScanStatus.SUCCESS) {
       idScanResultCallback.cancel()
-      reject("ID scan did not complete successfully.")
+      resolveFailure(flowCancelledError)
       return
     }
 
@@ -61,26 +61,22 @@ class SoyioIdOnlyProcessor(
 
         if (error || !wasProcessed || scanResultBlob.isNullOrBlank()) {
           idScanResultCallback.cancel()
-          reject(errorMessage.ifBlank { "FaceTec ID check failed." })
+          resolveFailure(errorMessage.takeIf { it.isNotBlank() } ?: defaultError)
           return@post
         }
 
-        val proceeded = idScanResultCallback.proceedToNextStep(scanResultBlob)
-        if (!proceeded) {
-          idScanResultCallback.cancel()
-          reject("FaceTec SDK rejected ID check response.")
-        } else {
-          resolve(true)
-        }
+        idScanResultCallback.proceedToNextStep(scanResultBlob)
+        resolveSuccess()
       },
       onFailure = {
         idScanResultCallback.cancel()
-        reject(it)
+        resolveFailure(it.ifBlank { defaultError })
       },
     )
   }
 
   companion object {
     private const val FACETEC_ID_ERROR = "FACETEC_ID_ERROR"
+    private const val FLOW_CANCELLED_ERROR = "FLOW_CANCELLED"
   }
 }
