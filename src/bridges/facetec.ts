@@ -1,4 +1,4 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
 import { getFaceTecCredentials, getFaceTecSessionToken } from '../api/facetec';
 import type { FaceTecVerificationConfig } from '../types';
@@ -21,10 +21,12 @@ interface SoyioFaceTecModuleInterface {
     disclosureRequestToken: string;
     baseUrl: string;
   }) => Promise<{ success: boolean; error?: string }>;
+  addListener: (eventName: string) => void;
+  removeListeners: (count: number) => void;
 }
 
-const FaceTecModule = NativeModules.SoyioFaceTecModule as SoyioFaceTecModuleInterface;
-const faceTecEmitter = new NativeEventEmitter(FaceTecModule as any);
+const FaceTecModule: SoyioFaceTecModuleInterface = Platform.OS === 'ios' ? NativeModules.SoyioFaceTecModule : NativeModules.AndroidFacetecSdk;
+const faceTecEmitter = new NativeEventEmitter(FaceTecModule);
 
 export const handleFaceTecVerification = async (
   config: FaceTecVerificationConfig,
