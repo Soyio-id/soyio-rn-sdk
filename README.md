@@ -58,6 +58,7 @@ Add the following permission to your `ios/YourApp/Info.plist` file to enable cam
 ```
 
 ### Android Permissions
+
 Add the following permission and feature declaration to your `android/app/src/main/AndroidManifest.xml` file within the `<manifest>` tag:
 
 ```xml
@@ -75,7 +76,7 @@ cd ios && pod install
 
 **Troubleshooting:**
 
-If you encounter the error `SoyioFaceTecModule not available`, ensure:
+If you encounter the error `FaceTec module not available`, ensure:
 
 1. You've run `pod install` in the iOS directory
 2. Clean build folder in Xcode: **Product → Clean Build Folder**

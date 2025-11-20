@@ -3,7 +3,7 @@ import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 import { getFaceTecCredentials, getFaceTecSessionToken } from '../api/facetec';
 import type { FaceTecVerificationConfig } from '../types';
 
-interface SoyioFaceTecModuleInterface {
+interface FaceTecModuleInterface {
   initializeFaceTecSDK: (config: {
     deviceKey: string;
     publicKey: string;
@@ -25,13 +25,13 @@ interface SoyioFaceTecModuleInterface {
   removeListeners: (count: number) => void;
 }
 
-const FaceTecModule: SoyioFaceTecModuleInterface = Platform.OS === 'ios' ? NativeModules.SoyioFaceTecModule : NativeModules.AndroidFacetecSdk;
+const FaceTecModule: FaceTecModuleInterface = Platform.OS === 'ios' ? NativeModules.IOSFacetecSdk : NativeModules.AndroidFacetecSdk;
 const faceTecEmitter = new NativeEventEmitter(FaceTecModule);
 
 export const handleFaceTecVerification = async (
   config: FaceTecVerificationConfig,
 ): Promise<void> => {
-  if (!FaceTecModule) throw new Error('SoyioFaceTecModule not available. Make sure the native module is properly linked.');
+  if (!FaceTecModule) throw new Error('FaceTec module not available. Make sure the native module is properly linked.');
 
   const livenessSubscription = config.mode === 'liveness-and-id' && config.onLivenessSuccess
     ? faceTecEmitter.addListener('onLivenessSuccess', config.onLivenessSuccess)

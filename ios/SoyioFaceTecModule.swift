@@ -3,8 +3,8 @@ import Foundation
 import FaceTecSDK
 import React
 
-@objc(SoyioFaceTecModule)
-class SoyioFaceTecModule: RCTEventEmitter {
+@objc(IOSFacetecSdk)
+class IOSFacetecSdk: RCTEventEmitter {
 
     private var currentPhotoIDProcessor: SoyioPhotoIDMatchProcessor?
     private var currentIDOnlyProcessor: SoyioIDOnlyProcessor?
