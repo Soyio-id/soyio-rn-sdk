@@ -130,6 +130,5 @@ class SoyioValidationProcessor(
 
   companion object {
     private const val FACETEC_VALIDATION_ERROR = "FACETEC_VALIDATION_ERROR"
-    private const val FLOW_CANCELLED_ERROR = "FLOW_CANCELLED"
   }
 }

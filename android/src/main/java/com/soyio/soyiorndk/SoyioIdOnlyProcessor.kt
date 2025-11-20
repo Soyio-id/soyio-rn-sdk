@@ -77,6 +77,5 @@ class SoyioIdOnlyProcessor(
 
   companion object {
     private const val FACETEC_ID_ERROR = "FACETEC_ID_ERROR"
-    private const val FLOW_CANCELLED_ERROR = "FLOW_CANCELLED"
   }
 }
