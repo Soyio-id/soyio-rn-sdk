@@ -10,6 +10,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
     var fromViewController: UIViewController!
     var faceScanResultCallback: FaceTecFaceScanResultCallback!
     var idScanResultCallback: FaceTecIDScanResultCallback!
+    var flowCancelledErrorMessage: String = "flowCancelled"
     var sessionId: String = ""
     var apiErrorMessage: String?
 
@@ -30,30 +31,6 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
         self.livenessSuccessHandler = livenessSuccessHandler
         self.completionHandler = completionHandler
         super.init()
-
-        // Configure ID Scan upload messages
-        FaceTecCustomization.setIDScanUploadMessageOverrides(
-            frontSideUploadStarted: "Uploading\nEncrypted\nID Scan",
-            frontSideStillUploading: "Still Uploading...\nSlow Connection",
-            frontSideUploadCompleteAwaitingResponse: "Upload Complete",
-            frontSideUploadCompleteAwaitingProcessing: "Processing\nID Scan",
-            backSideUploadStarted: "Uploading\nEncrypted\nBack of ID",
-            backSideStillUploading: "Still Uploading...\nSlow Connection",
-            backSideUploadCompleteAwaitingResponse: "Upload Complete",
-            backSideUploadCompleteAwaitingProcessing: "Processing\nBack of ID",
-            userConfirmedInfoUploadStarted: "Saving\nYour Confirmed Info",
-            userConfirmedInfoStillUploading: "Still Uploading...\nSlow Connection",
-            userConfirmedInfoUploadCompleteAwaitingResponse: "Info Saved",
-            userConfirmedInfoUploadCompleteAwaitingProcessing: "Processing",
-            nfcUploadStarted: "Uploading Encrypted\nNFC Details",
-            nfcStillUploading: "Still Uploading...\nSlow Connection",
-            nfcUploadCompleteAwaitingResponse: "Upload Complete",
-            nfcUploadCompleteAwaitingProcessing: "Processing\nNFC Details",
-            skippedNFCUploadStarted: "Uploading Encrypted\nID Details",
-            skippedNFCStillUploading: "Still Uploading...\nSlow Connection",
-            skippedNFCUploadCompleteAwaitingResponse: "Upload Complete",
-            skippedNFCUploadCompleteAwaitingProcessing: "Processing\nID Details"
-        );
 
         // Create the FaceTec session
         let idScanViewController = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self, idScanProcessorDelegate: self, sessionToken: facetecSessionToken)
@@ -124,7 +101,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             let success = responseJSON["success"] as? Bool ?? false
 
             if wasProcessed == true {
-                FaceTecCustomization.setOverrideResultScreenSuccessMessage("Face Scanned\n3D Liveness Proven")
+                FaceTecCustomization.setOverrideResultScreenSuccessMessage("¡Te ves bien!\nVerificación facial 3D completa")
                 self.faceScanWasSuccessful = faceScanResultCallback.onFaceScanGoToNextStep(scanResultBlob: scanResultBlob)
 
                 // Notify that liveness check was successful (only if success == true)
@@ -143,7 +120,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
         // Update user if upload is taking a while
         DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
             if self.latestNetworkRequest.state == .completed { return }
-            let uploadMessage = NSMutableAttributedString.init(string: "Still Uploading...")
+            let uploadMessage = NSMutableAttributedString.init(string: "Ya casi terminamos...")
             faceScanResultCallback.onFaceScanUploadMessageOverride(uploadMessageOverride: uploadMessage)
         }
     }
@@ -264,7 +241,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if self.success {
                 self.completionHandler?(true, nil)
             } else {
-                let errorMessage = self.apiErrorMessage ?? "FaceTec verification did not complete successfully"
+                let errorMessage = self.apiErrorMessage ?? self.flowCancelledErrorMessage
                 self.completionHandler?(false, errorMessage)
             }
         })

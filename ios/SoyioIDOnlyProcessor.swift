@@ -9,6 +9,7 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
     var fromViewController: UIViewController!
     var idScanResultCallback: FaceTecIDScanResultCallback!
     var sessionId: String = ""
+    var flowCancelledErrorMessage: String = "flowCancelled"
     var apiErrorMessage: String?
 
     // Dynamic configuration parameters
@@ -26,30 +27,6 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
         self.fromViewController = fromViewController
         self.completionHandler = completionHandler
         super.init()
-
-        // Configure ID Scan upload messages
-        FaceTecCustomization.setIDScanUploadMessageOverrides(
-            frontSideUploadStarted: "Uploading\nEncrypted\nID Scan",
-            frontSideStillUploading: "Still Uploading...\nSlow Connection",
-            frontSideUploadCompleteAwaitingResponse: "Upload Complete",
-            frontSideUploadCompleteAwaitingProcessing: "Processing\nID Scan",
-            backSideUploadStarted: "Uploading\nEncrypted\nBack of ID",
-            backSideStillUploading: "Still Uploading...\nSlow Connection",
-            backSideUploadCompleteAwaitingResponse: "Upload Complete",
-            backSideUploadCompleteAwaitingProcessing: "Processing\nBack of ID",
-            userConfirmedInfoUploadStarted: "Saving\nYour Confirmed Info",
-            userConfirmedInfoStillUploading: "Still Uploading...\nSlow Connection",
-            userConfirmedInfoUploadCompleteAwaitingResponse: "Info Saved",
-            userConfirmedInfoUploadCompleteAwaitingProcessing: "Processing",
-            nfcUploadStarted: "Uploading Encrypted\nNFC Details",
-            nfcStillUploading: "Still Uploading...\nSlow Connection",
-            nfcUploadCompleteAwaitingResponse: "Upload Complete",
-            nfcUploadCompleteAwaitingProcessing: "Processing\nNFC Details",
-            skippedNFCUploadStarted: "Uploading Encrypted\nID Details",
-            skippedNFCStillUploading: "Still Uploading...\nSlow Connection",
-            skippedNFCUploadCompleteAwaitingResponse: "Upload Complete",
-            skippedNFCUploadCompleteAwaitingProcessing: "Processing\nID Details"
-        );
 
         // Create the FaceTec session - only ID scan, no liveness check
         let idScanViewController = FaceTec.sdk.createSessionVC(idScanProcessorDelegate: self, sessionToken: facetecSessionToken)
@@ -174,7 +151,7 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
             if self.success {
                 self.completionHandler?(true, nil)
             } else {
-                let errorMessage = self.apiErrorMessage ?? "FaceTec ID verification did not complete successfully"
+                let errorMessage = self.apiErrorMessage ?? self.flowCancelledErrorMessage
                 self.completionHandler?(false, errorMessage)
             }
         })
