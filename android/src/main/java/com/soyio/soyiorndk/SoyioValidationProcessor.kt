@@ -46,7 +46,7 @@ class SoyioValidationProcessor(
   ) {
     if (sessionResult.status != FaceTecSessionStatus.SESSION_COMPLETED_SUCCESSFULLY) {
       faceScanResultCallback.cancel()
-      reject("FaceTec session did not complete successfully.")
+      resolveFailure(flowCancelledError)
       return
     }
 
@@ -69,8 +69,8 @@ class SoyioValidationProcessor(
         val scanResultBlob = json.optString("scanResultBlob")
 
         if (error || !wasProcessed || scanResultBlob.isNullOrBlank()) {
-          reject(errorMessage.ifBlank { "FaceTec liveness check failed." })
           faceScanResultCallback.cancel()
+          resolveFailure(errorMessage.takeIf { it.isNotBlank() } ?: defaultError)
           return@post
         }
 
@@ -79,7 +79,7 @@ class SoyioValidationProcessor(
       },
       onFailure = {
         faceScanResultCallback.cancel()
-        reject(it)
+        resolveFailure(it.ifBlank { defaultError })
       },
     )
   }
@@ -90,6 +90,7 @@ class SoyioValidationProcessor(
   ) {
     if (idScanResult.status != FaceTecIDScanStatus.SUCCESS) {
       idScanResultCallback.cancel()
+      resolveFailure(flowCancelledError)
       return
     }
 
@@ -112,17 +113,17 @@ class SoyioValidationProcessor(
         val scanResultBlob = json.optString("scanResultBlob")
 
         if (error || !wasProcessed || scanResultBlob.isNullOrBlank()) {
-          reject(errorMessage.ifBlank { "FaceTec ID check failed." })
           idScanResultCallback.cancel()
+          resolveFailure(errorMessage.takeIf { it.isNotBlank() } ?: defaultError)
           return@post
         }
 
         idScanResultCallback.proceedToNextStep(scanResultBlob)
-        resolve(true)
+        resolveSuccess()
       },
       onFailure = {
         idScanResultCallback.cancel()
-        reject(it)
+        resolveFailure(it.ifBlank { defaultError })
       },
     )
   }
