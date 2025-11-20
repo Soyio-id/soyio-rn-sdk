@@ -3,10 +3,41 @@ import Foundation
 import FaceTecSDK
 
 class FacetecConfig {
+
+    private static func customFont(size: CGFloat, weight: UIFont.Weight) -> UIFont {
+        let fontName: String
+        switch weight {
+        case .regular:
+            fontName = "RobotoFlex"
+        case .medium:
+            fontName = "RobotoFlex"
+        case .semibold:
+            fontName = "RobotoFlex"
+        case .bold:
+            fontName = "RobotoFlex"
+        default:
+            fontName = "RobotoFlex"
+        }
+
+        if let customFont = UIFont(name: fontName, size: size) {
+            let descriptor = customFont.fontDescriptor.addingAttributes([
+                .traits: [UIFontDescriptor.TraitKey.weight: weight.rawValue]
+            ])
+            return UIFont(descriptor: descriptor, size: size)
+        }
+
+        return UIFont.systemFont(ofSize: size, weight: weight)
+    }
+
     static func initializeWithCustomCredentials(deviceKey: String, publicKey: String, productionKey: String, completion: @escaping (Bool)->()) {
         FaceTec.sdk.initializeInDevelopmentMode(deviceKeyIdentifier: deviceKey, faceScanEncryptionKey: publicKey, completion: { initializationSuccessful in
             let status = FaceTec.sdk.getStatus()
-            if !initializationSuccessful {
+            if initializationSuccessful {
+                FaceTec.sdk.setDynamicStrings(FacetecStrings.spanish)
+                FaceTec.sdk.setCustomization(FacetecConfig.currentCustomization)
+                FaceTec.sdk.setLowLightCustomization(FacetecConfig.currentCustomization)
+                FaceTec.sdk.setDynamicDimmingCustomization(FacetecConfig.currentCustomization)
+            } else {
                 FaceTec.sdk.auditTrailType = .fullResolution
                 FaceTec.sdk.setMaxAuditTrailImages(.upToSix)
             }
@@ -19,14 +50,14 @@ class FacetecConfig {
     public static func retrieveConfigurationWizardCustomization() -> FaceTecCustomization {
         let outerBackgroundColor = UIColor(hexString: "#ffffff")
         let frameColor = UIColor(hexString: "#ffffff")
-        let borderColor = UIColor(hexString: "#417FB2")
-        let ovalColor = UIColor(hexString: "#417FB2")
-        let dualSpinnerColor = UIColor(hexString: "#417FB2")
-        let textColor = UIColor(hexString: "#417FB2")
-        let buttonAndFeedbackBarColor =  UIColor(hexString: "#417FB2")
+        let borderColor = UIColor(hexString: "#ffffff")
+        let ovalColor = UIColor(hexString: "#3340CF")
+        let dualSpinnerColor = UIColor(hexString: "#3340CF")
+        let textColor = UIColor(hexString: "#000000")
+        let buttonAndFeedbackBarColor =  UIColor(hexString: "#3340CF")
         let buttonAndFeedbackBarTextColor = UIColor(hexString: "#ffffff")
-        let buttonColorHighlight =  UIColor(hexString: "#396E99")
-        let buttonColorDisabled =  UIColor(hexString: "#B9CCDE")
+        let buttonColorHighlight =  UIColor(hexString: "#2A35B0")
+        let buttonColorDisabled =  UIColor(hexString: "#9BA3D8")
         let feedbackBackgroundLayer = CAGradientLayer.init()
         feedbackBackgroundLayer.colors = [buttonAndFeedbackBarColor.cgColor, buttonAndFeedbackBarColor.cgColor]
         feedbackBackgroundLayer.locations = [0,1]
@@ -40,7 +71,6 @@ class FacetecConfig {
         let cancelButtonLocation: FaceTecCancelButtonLocation = .topLeft
 
         // For Image Customization
-        let yourAppLogoImage = UIImage(named: "FaceTec_your_app_logo")
         let securityWatermarkImage: FaceTecSecurityWatermarkImage = .faceTec
 
         // Set a Default Customization
@@ -53,7 +83,7 @@ class FacetecConfig {
         defaultCustomization.frameCustomization.borderColor = borderColor
 
         // Set Overlay Customization
-        defaultCustomization.overlayCustomization.brandingImage = yourAppLogoImage
+        defaultCustomization.overlayCustomization.showBrandingImage = false
         defaultCustomization.overlayCustomization.backgroundColor = outerBackgroundColor
 
         // Set Guidance Customization
@@ -109,24 +139,48 @@ class FacetecConfig {
         defaultCustomization.idScanCustomization.captureScreenBackgroundColor = frameColor
         defaultCustomization.idScanCustomization.captureFrameStrokeColor = borderColor
 
+        // MARK: - Font Configuration (matching web Config.ts)
+        let regularFont = customFont(size: 16, weight: .regular)
+        let mediumFont = customFont(size: 16, weight: .medium)
+        let semiBoldFont = customFont(size: 18, weight: .semibold)
+        let boldFont = customFont(size: 18, weight: .bold)
+
+        // Guidance Customization Fonts
+        defaultCustomization.guidanceCustomization.headerFont = semiBoldFont
+        defaultCustomization.guidanceCustomization.subtextFont = regularFont
+        defaultCustomization.guidanceCustomization.buttonFont = boldFont
+        defaultCustomization.guidanceCustomization.readyScreenHeaderFont = semiBoldFont
+        defaultCustomization.guidanceCustomization.readyScreenSubtextFont = regularFont
+        defaultCustomization.guidanceCustomization.retryScreenHeaderFont = semiBoldFont
+        defaultCustomization.guidanceCustomization.retryScreenSubtextFont = regularFont
+
+        // ID Scan Customization Fonts
+        defaultCustomization.idScanCustomization.headerFont = semiBoldFont
+        defaultCustomization.idScanCustomization.subtextFont = regularFont
+        defaultCustomization.idScanCustomization.buttonFont = boldFont
+
+        // OCR Confirmation Customization Fonts
+        defaultCustomization.ocrConfirmationCustomization.mainHeaderFont = boldFont
+        defaultCustomization.ocrConfirmationCustomization.sectionHeaderFont = semiBoldFont
+        defaultCustomization.ocrConfirmationCustomization.fieldLabelFont = regularFont
+        defaultCustomization.ocrConfirmationCustomization.fieldValueFont = regularFont
+        defaultCustomization.ocrConfirmationCustomization.inputFieldFont = regularFont
+        defaultCustomization.ocrConfirmationCustomization.inputFieldPlaceholderFont = regularFont
+        defaultCustomization.ocrConfirmationCustomization.buttonFont = boldFont
+
+        // Result Screen Customization Font
+        defaultCustomization.resultScreenCustomization.messageFont = regularFont
+
+        // Feedback Customization Font
+        defaultCustomization.feedbackCustomization.textFont = mediumFont
+
+        // Initial Loading Animation Font
+        defaultCustomization.initialLoadingAnimationCustomization.messageFont = regularFont
 
         return defaultCustomization
     }
 
-
-    public static func retrieveLowLightConfigurationWizardCustomization() -> FaceTecCustomization { 
-        return retrieveConfigurationWizardCustomization()
-    }
-
-
-    public static func retrieveDynamicDimmingConfigurationWizardCustomization() -> FaceTecCustomization {
-        return retrieveConfigurationWizardCustomization()
-    }
-
-
     static var currentCustomization: FaceTecCustomization = retrieveConfigurationWizardCustomization()
-    static var currentLowLightCustomization: FaceTecCustomization = retrieveLowLightConfigurationWizardCustomization()
-    static var currentDynamicDimmingCustomization: FaceTecCustomization = retrieveDynamicDimmingConfigurationWizardCustomization()
 
     static let wasSDKConfiguredWithConfigWizard = true
 

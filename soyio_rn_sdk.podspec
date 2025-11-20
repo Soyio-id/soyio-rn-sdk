@@ -14,6 +14,9 @@ Pod::Spec.new do |s|
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
 
+  # Font resources
+  s.resources = 'assets/fonts/**/*.ttf'
+
   # Vendored FaceTec framework
   s.vendored_frameworks = 'ios/Frameworks/FaceTecSDK.framework'
 
