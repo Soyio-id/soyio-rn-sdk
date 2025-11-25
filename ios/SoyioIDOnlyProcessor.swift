@@ -107,20 +107,20 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
                 // Configure result screen messages
                 FaceTecCustomization.setIDScanResultScreenMessageOverrides(
                     successFrontSide: "Front Scan Complete",
-                    successFrontSideBackNext: "Front of ID\nScanned",
-                    successFrontSideNFCNext: "Front of ID\nScanned",
-                    successBackSide: "ID Scan Complete",
-                    successBackSideNFCNext: "Back of ID\nScanned",
-                    successPassport: "Passport Scan Complete",
-                    successPassportNFCNext: "Passport Scanned",
-                    successUserConfirmation: "Photo ID Scan\nComplete",
-                    successNFC: "ID Scan Complete",
-                    successAdditionalReview: "ID Photo Capture\nComplete",
-                    retryFaceDidNotMatch: "Face Didn't Match\nHighly Enough",
-                    retryIDNotFullyVisible: "ID Document\nNot Fully Visible",
-                    retryOCRResultsNotGoodEnough: "ID Text Not Legible",
-                    retryIDTypeNotSupported: "ID Type Mismatch\nPlease Try Again",
-                    skipOrErrorNFC: "ID Details\nUploaded"
+                    successFrontSideBackNext: "Lado frontal de la cédula\ncapturado",
+                    successFrontSideNFCNext: "Frente de la cédula\ncapturado",
+                    successBackSide: "Ambos lados fueron\ncapturados y verificados",
+                    successBackSideNFCNext: "Ambos lados fueron\ncapturados y verificados",
+                    successPassport: "Pasaporte capturado",
+                    successPassportNFCNext: "Pasaporte capturado",
+                    successUserConfirmation: "Cédula capturada",
+                    successNFC: "Cédula capturada",
+                    successAdditionalReview: "Cédula capturada",
+                    retryFaceDidNotMatch: "El rostro no coincide\nlo suficiente",
+                    retryIDNotFullyVisible: "La cédula\nno es totalmente visible",
+                    retryOCRResultsNotGoodEnough: "El texto de la cédula no es legible",
+                    retryIDTypeNotSupported: "No se admite este tipo de identificación\nUtiliza una identificación diferente",
+                    skipOrErrorNFC: "Información de la cédula\nsubida"
                 )
 
                 self.success = idScanResultCallback.onIDScanResultProceedToNextStep(scanResultBlob: scanResultBlob)
