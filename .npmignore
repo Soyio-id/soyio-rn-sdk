@@ -3,6 +3,7 @@
 !package/**
 !index.ts
 !ios/**
+!assets/**
 !react-native.config.js
 !soyio_rn_sdk.podspec
 !README.md
