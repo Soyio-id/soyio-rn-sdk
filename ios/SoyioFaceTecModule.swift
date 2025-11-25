@@ -55,6 +55,15 @@ class IOSFacetecSdk: RCTEventEmitter {
             return
         }
 
+        var themeColors: [String: String]? = nil
+        if let theme = config["theme"] as? [String: Any] {
+            themeColors = [
+                "mainColor": theme["mainColor"] as? String ?? "",
+                "highlightColor": theme["highlightColor"] as? String ?? "",
+                "disabledColor": theme["disabledColor"] as? String ?? ""
+            ]
+        }
+
         let status = FaceTec.sdk.getStatus()
         if status == .initialized {
             resolver(["success": true])
@@ -64,7 +73,8 @@ class IOSFacetecSdk: RCTEventEmitter {
         FacetecConfig.initializeWithCustomCredentials(
             deviceKey: deviceKey,
             publicKey: publicKey,
-            productionKey: productionKey
+            productionKey: productionKey,
+            themeColors: themeColors
         ) { success in
             if success {
                 resolver(["success": true])

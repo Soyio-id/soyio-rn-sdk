@@ -4,20 +4,17 @@ import FaceTecSDK
 
 class FacetecConfig {
 
-    private static func customFont(size: CGFloat, weight: UIFont.Weight) -> UIFont {
-        let fontName: String
-        switch weight {
-        case .regular:
-            fontName = "RobotoFlex"
-        case .medium:
-            fontName = "RobotoFlex"
-        case .semibold:
-            fontName = "RobotoFlex"
-        case .bold:
-            fontName = "RobotoFlex"
-        default:
-            fontName = "RobotoFlex"
+    private static let resourceBundle: Bundle = {
+        let frameworkBundle = Bundle(for: FacetecConfig.self)
+        guard let resourceBundleURL = frameworkBundle.url(forResource: "SoyioRnSdk", withExtension: "bundle"),
+              let resourceBundle = Bundle(url: resourceBundleURL) else {
+            return frameworkBundle
         }
+        return resourceBundle
+    }()
+
+    private static func customFont(size: CGFloat, weight: UIFont.Weight) -> UIFont {
+        let fontName = "RobotoFlex"
 
         if let customFont = UIFont(name: fontName, size: size) {
             let descriptor = customFont.fontDescriptor.addingAttributes([
@@ -29,14 +26,15 @@ class FacetecConfig {
         return UIFont.systemFont(ofSize: size, weight: weight)
     }
 
-    static func initializeWithCustomCredentials(deviceKey: String, publicKey: String, productionKey: String, completion: @escaping (Bool)->()) {
+    static func initializeWithCustomCredentials(deviceKey: String, publicKey: String, productionKey: String, themeColors: [String: String]?, completion: @escaping (Bool)->()) {
         FaceTec.sdk.initializeInDevelopmentMode(deviceKeyIdentifier: deviceKey, faceScanEncryptionKey: publicKey, completion: { initializationSuccessful in
             let status = FaceTec.sdk.getStatus()
             if initializationSuccessful {
                 FaceTec.sdk.setDynamicStrings(FacetecStrings.spanish)
-                FaceTec.sdk.setCustomization(FacetecConfig.currentCustomization)
-                FaceTec.sdk.setLowLightCustomization(FacetecConfig.currentCustomization)
-                FaceTec.sdk.setDynamicDimmingCustomization(FacetecConfig.currentCustomization)
+                let customization = FacetecConfig.retrieveConfigurationWizardCustomization(withTheme: themeColors)
+                FaceTec.sdk.setCustomization(customization)
+                FaceTec.sdk.setLowLightCustomization(customization)
+                FaceTec.sdk.setDynamicDimmingCustomization(customization)
             } else {
                 FaceTec.sdk.auditTrailType = .fullResolution
                 FaceTec.sdk.setMaxAuditTrailImages(.upToSix)
@@ -47,19 +45,39 @@ class FacetecConfig {
     }
 
 
-    public static func retrieveConfigurationWizardCustomization() -> FaceTecCustomization {
-        let outerBackgroundColor = UIColor(hexString: "#ffffff")
-        let frameColor = UIColor(hexString: "#ffffff")
-        let borderColor = UIColor(hexString: "#ffffff")
-        let ovalColor = UIColor(hexString: "#3340CF")
-        let dualSpinnerColor = UIColor(hexString: "#3340CF")
-        let textColor = UIColor(hexString: "#000000")
-        let buttonAndFeedbackBarColor =  UIColor(hexString: "#3340CF")
-        let buttonAndFeedbackBarTextColor = UIColor(hexString: "#ffffff")
-        let buttonColorHighlight =  UIColor(hexString: "#2A35B0")
-        let buttonColorDisabled =  UIColor(hexString: "#9BA3D8")
+    public static func retrieveConfigurationWizardCustomization(withTheme theme: [String: String]?) -> FaceTecCustomization {
+        let black = UIColor(hexString: "#000000")
+        let white = UIColor(hexString: "#ffffff")
+
+        let mainColor: UIColor
+        let buttonColorHighlight: UIColor
+        let buttonColorDisabled: UIColor
+
+        if let hex = theme?["mainColor"], !hex.isEmpty {
+            mainColor = UIColor(hexString: hex)
+        } else {
+            mainColor = UIColor(hexString: "#3340CF")
+        }
+        if let hex = theme?["highlightColor"], !hex.isEmpty {
+            buttonColorHighlight = UIColor(hexString: hex)
+        } else {
+            buttonColorHighlight = UIColor(hexString: "#2A35B0")
+        }
+        if let hex = theme?["disabledColor"], !hex.isEmpty {
+            buttonColorDisabled = UIColor(hexString: hex)
+        } else {
+            buttonColorDisabled = UIColor(hexString: "#9BA3D8")
+        }
+
+        let outerBackgroundColor = white
+        let frameColor = white
+        let borderColor = white
+        let ovalColor = mainColor
+        let dualSpinnerColor = mainColor
+        let buttonAndFeedbackBarColor =  mainColor
+        let buttonAndFeedbackBarTextColor = white
         let feedbackBackgroundLayer = CAGradientLayer.init()
-        feedbackBackgroundLayer.colors = [buttonAndFeedbackBarColor.cgColor, buttonAndFeedbackBarColor.cgColor]
+        feedbackBackgroundLayer.colors = [black.cgColor, black.cgColor]
         feedbackBackgroundLayer.locations = [0,1]
         feedbackBackgroundLayer.startPoint = CGPoint.init(x: 0, y: 0)
         feedbackBackgroundLayer.endPoint = CGPoint.init(x: 1, y: 0)
@@ -67,7 +85,7 @@ class FacetecConfig {
         // For Frame Corner Radius Customization
         let frameCornerRadius: Int32 = 20
 
-        let cancelImage = UIImage(named: "FaceTec_cancel")
+        let cancelImage = UIImage(named: "facetec-close", in: resourceBundle, compatibleWith: nil)
         let cancelButtonLocation: FaceTecCancelButtonLocation = .topLeft
 
         // For Image Customization
@@ -88,10 +106,11 @@ class FacetecConfig {
 
         // Set Guidance Customization
         defaultCustomization.guidanceCustomization.backgroundColors = [frameColor, frameColor]
-        defaultCustomization.guidanceCustomization.foregroundColor = textColor
+        defaultCustomization.guidanceCustomization.foregroundColor = black
         defaultCustomization.guidanceCustomization.buttonBackgroundNormalColor = buttonAndFeedbackBarColor
         defaultCustomization.guidanceCustomization.buttonBackgroundDisabledColor = buttonColorDisabled
         defaultCustomization.guidanceCustomization.buttonBackgroundHighlightColor = buttonColorHighlight
+        defaultCustomization.guidanceCustomization.buttonCornerRadius = 8
         defaultCustomization.guidanceCustomization.buttonTextNormalColor = buttonAndFeedbackBarTextColor
         defaultCustomization.guidanceCustomization.buttonTextDisabledColor = buttonAndFeedbackBarTextColor
         defaultCustomization.guidanceCustomization.buttonTextHighlightColor = buttonAndFeedbackBarTextColor
@@ -113,7 +132,7 @@ class FacetecConfig {
 
         // Set Result Screen Customization
         defaultCustomization.resultScreenCustomization.backgroundColors = [frameColor, frameColor]
-        defaultCustomization.resultScreenCustomization.foregroundColor = textColor
+        defaultCustomization.resultScreenCustomization.foregroundColor = black
         defaultCustomization.resultScreenCustomization.activityIndicatorColor = buttonAndFeedbackBarColor
         defaultCustomization.resultScreenCustomization.resultAnimationBackgroundColor = buttonAndFeedbackBarColor
         defaultCustomization.resultScreenCustomization.resultAnimationForegroundColor = buttonAndFeedbackBarTextColor
@@ -123,13 +142,13 @@ class FacetecConfig {
         defaultCustomization.securityWatermarkImage = securityWatermarkImage
 
         // Set ID Scan Customization
-        defaultCustomization.idScanCustomization.selectionScreenBackgroundColors = [frameColor, frameColor]
-        defaultCustomization.idScanCustomization.selectionScreenForegroundColor = textColor
+        defaultCustomization.idScanCustomization.selectionScreenDocumentImage = UIImage(named: "facetec-id-front", in: resourceBundle, compatibleWith: nil)
+        defaultCustomization.idScanCustomization.selectionScreenForegroundColor = black // text color of instructions
         defaultCustomization.idScanCustomization.reviewScreenBackgroundColors = [frameColor, frameColor]
         defaultCustomization.idScanCustomization.reviewScreenForegroundColor = buttonAndFeedbackBarTextColor
         defaultCustomization.idScanCustomization.reviewScreenTextBackgroundColor = buttonAndFeedbackBarColor
         defaultCustomization.idScanCustomization.captureScreenForegroundColor = buttonAndFeedbackBarTextColor
-        defaultCustomization.idScanCustomization.captureScreenTextBackgroundColor = buttonAndFeedbackBarColor
+        defaultCustomization.idScanCustomization.captureScreenTextBackgroundColor = black
         defaultCustomization.idScanCustomization.buttonBackgroundNormalColor = buttonAndFeedbackBarColor
         defaultCustomization.idScanCustomization.buttonBackgroundDisabledColor = buttonColorDisabled
         defaultCustomization.idScanCustomization.buttonBackgroundHighlightColor = buttonColorHighlight
@@ -138,6 +157,7 @@ class FacetecConfig {
         defaultCustomization.idScanCustomization.buttonTextHighlightColor = buttonAndFeedbackBarTextColor
         defaultCustomization.idScanCustomization.captureScreenBackgroundColor = frameColor
         defaultCustomization.idScanCustomization.captureFrameStrokeColor = borderColor
+        defaultCustomization.idScanCustomization.buttonCornerRadius = 8
 
         // MARK: - Font Configuration (matching web Config.ts)
         let regularFont = customFont(size: 16, weight: .regular)
@@ -180,7 +200,7 @@ class FacetecConfig {
         return defaultCustomization
     }
 
-    static var currentCustomization: FaceTecCustomization = retrieveConfigurationWizardCustomization()
+    static var currentCustomization: FaceTecCustomization = retrieveConfigurationWizardCustomization(withTheme: nil)
 
     static let wasSDKConfiguredWithConfigWizard = true
 

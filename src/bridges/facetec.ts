@@ -8,6 +8,11 @@ interface FaceTecModuleInterface {
     deviceKey: string;
     publicKey: string;
     productionKey: string;
+    theme?: {
+      mainColor: string;
+      highlightColor: string;
+      disabledColor: string;
+    } | null;
   }) => Promise<{ success: boolean; error?: string }>;
   startLivenessAndIDVerification: (config: {
     facetecSessionToken: string;
@@ -44,6 +49,7 @@ export const handleFaceTecVerification = async (
       deviceKey: credentials.deviceKey,
       publicKey: credentials.publicKey,
       productionKey: credentials.productionKey,
+      theme: config.theme || null,
     });
 
     if (!initResult.success) throw new Error(initResult.error || 'Failed to initialize FaceTec SDK');

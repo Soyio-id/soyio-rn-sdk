@@ -6,12 +6,15 @@ import { handlePasskeyAuthentication, handlePasskeyRequired } from '../bridges/p
 import type {
   AuthRequestParams,
   DisclosureParams,
+  FaceTecConfigRequired,
   FaceTecRequired,
+  FaceTecThemeColors,
   PasskeyRegistrationRequired,
   SoyioWidgetOptions,
   WebViewEvent,
 } from '../types';
 
+import { computeFaceTecColors, isValidHexColor } from './color';
 import { isAuthenticationRequest, isDisclosureRequest } from './type-guards';
 import { resolveBaseUrl } from './url-builder';
 
@@ -21,6 +24,8 @@ interface MessageHandlerDependencies {
   requestParams: DisclosureParams | AuthRequestParams;
   onSuccess?: () => void;
 }
+
+let cachedFaceTecTheme: FaceTecThemeColors | null = null;
 
 function postMessageToWebView(webViewRef: React.RefObject<WebView>, messageObject: object): void {
   const message = JSON.stringify(messageObject);
@@ -81,6 +86,16 @@ function handlePasskeyAuthenticationEvent(
   });
 }
 
+function handleFaceTecConfigEvent(
+  eventData: FaceTecConfigRequired,
+): void {
+  const { mainColor } = eventData;
+
+  if (!isValidHexColor(mainColor)) return;
+
+  cachedFaceTecTheme = computeFaceTecColors(mainColor);
+}
+
 function handleFaceTecRequiredEvent(
   eventData: FaceTecRequired,
   dependencies: MessageHandlerDependencies,
@@ -98,6 +113,7 @@ function handleFaceTecRequiredEvent(
       soyioSessionToken: eventData.sessionToken,
       disclosureRequestToken: eventData.requestableToken,
       baseUrl,
+      theme: cachedFaceTecTheme,
       onLivenessSuccess: () => postMessageToWebView(webViewRef, { type: 'FACETEC_LIVENESS_SUCCESS' }),
     }
     : {
@@ -105,6 +121,7 @@ function handleFaceTecRequiredEvent(
       soyioSessionToken: eventData.sessionToken,
       disclosureRequestToken: eventData.requestableToken,
       baseUrl,
+      theme: cachedFaceTecTheme,
     };
 
   handleFaceTecVerification(config).catch((error) => {
@@ -141,6 +158,10 @@ export function buildMessageHandler(
 
         case 'PASSKEY_AUTHENTICATION_REQUIRED':
           handlePasskeyAuthenticationEvent(dependencies);
+          break;
+
+        case 'FACETEC_MAIN_THEME':
+          handleFaceTecConfigEvent(eventData);
           break;
 
         case 'FACETEC_LIVENESS_PHOTO_ID_REQUIRED':

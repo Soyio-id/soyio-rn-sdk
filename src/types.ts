@@ -20,10 +20,17 @@ export interface FaceTecSessionTokenResponse {
   sessionToken: string;
 }
 
+export interface FaceTecThemeColors {
+  mainColor: string;
+  highlightColor: string;
+  disabledColor: string;
+}
+
 export interface FaceTecBaseParams {
   soyioSessionToken: string;
   disclosureRequestToken: string;
   baseUrl: string;
+  theme?: FaceTecThemeColors | null;
   onComplete?: () => void;
 }
 
@@ -94,9 +101,15 @@ export type FaceTecRequired = {
   requestableToken: string;
 }
 
+export type FaceTecConfigRequired = {
+  type: 'FACETEC_MAIN_THEME';
+  mainColor: string;
+}
+
 export type WidgetDisclosureEvents =
   | WebviewSuccessEvent
   | PasskeyRegistrationRequired
+  | FaceTecConfigRequired
   | FaceTecRequired;
 
 export type WidgetAuthRequestEvents =
