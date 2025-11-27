@@ -12,7 +12,7 @@ interface FaceTecModuleInterface {
       mainColor: string;
       highlightColor: string;
       disabledColor: string;
-    } | null;
+    };
   }) => Promise<{ success: boolean; error?: string }>;
   startLivenessAndIDVerification: (config: {
     facetecSessionToken: string;

@@ -10,7 +10,8 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
     var fromViewController: UIViewController!
     var faceScanResultCallback: FaceTecFaceScanResultCallback!
     var idScanResultCallback: FaceTecIDScanResultCallback!
-    var flowCancelledErrorMessage: String = "flowCancelled"
+    var flowCancelledErrorMessage: String = "FLOW_CANCELLED"
+    var unknownErrorMessage: String = "unknown_error"
     var sessionId: String = ""
     var apiErrorMessage: String?
 
@@ -49,6 +50,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if latestNetworkRequest != nil {
                 latestNetworkRequest.cancel()
             }
+            self.apiErrorMessage = self.flowCancelledErrorMessage
             faceScanResultCallback.onFaceScanResultCancel()
             return
         }
@@ -87,6 +89,9 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if let error = responseJSON["error"] as? Bool {
                 if (error) {
                     self.apiErrorMessage = responseJSON["errorMessage"] as? String
+                    if self.apiErrorMessage?.isEmpty ?? true {
+                        self.apiErrorMessage = self.unknownErrorMessage
+                    }
                     faceScanResultCallback.onFaceScanResultCancel()
                     return
                 }
@@ -136,6 +141,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if latestNetworkRequest != nil {
                 latestNetworkRequest.cancel()
             }
+            self.apiErrorMessage = self.flowCancelledErrorMessage
             idScanResultCallback.onIDScanResultCancel()
             return
         }
@@ -177,6 +183,9 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if let error = responseJSON["error"] as? Bool {
                 if (error) {
                     self.apiErrorMessage = responseJSON["errorMessage"] as? String
+                    if self.apiErrorMessage?.isEmpty ?? true {
+                        self.apiErrorMessage = self.unknownErrorMessage
+                    }
                     idScanResultCallback.onIDScanResultCancel()
                     return
                 }
@@ -241,7 +250,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if self.success {
                 self.completionHandler?(true, nil)
             } else {
-                let errorMessage = self.apiErrorMessage ?? self.flowCancelledErrorMessage
+                let errorMessage = self.apiErrorMessage ?? self.unknownErrorMessage
                 self.completionHandler?(false, errorMessage)
             }
         })

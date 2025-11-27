@@ -9,7 +9,8 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
     var fromViewController: UIViewController!
     var idScanResultCallback: FaceTecIDScanResultCallback!
     var sessionId: String = ""
-    var flowCancelledErrorMessage: String = "flowCancelled"
+    var flowCancelledErrorMessage: String = "FLOW_CANCELLED"
+    var unknownErrorMessage: String = "unknown_error"
     var apiErrorMessage: String?
 
     // Dynamic configuration parameters
@@ -51,6 +52,7 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
             if latestNetworkRequest != nil {
                 latestNetworkRequest.cancel()
             }
+            self.apiErrorMessage = self.flowCancelledErrorMessage
             idScanResultCallback.onIDScanResultCancel()
             return
         }
@@ -92,6 +94,9 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
             if let error = responseJSON["error"] as? Bool {
                 if (error) {
                     self.apiErrorMessage = responseJSON["errorMessage"] as? String
+                    if self.apiErrorMessage?.isEmpty ?? true {
+                        self.apiErrorMessage = self.unknownErrorMessage
+                    }
                     idScanResultCallback.onIDScanResultCancel()
                     return
                 }
@@ -151,7 +156,7 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
             if self.success {
                 self.completionHandler?(true, nil)
             } else {
-                let errorMessage = self.apiErrorMessage ?? self.flowCancelledErrorMessage
+                let errorMessage = self.apiErrorMessage ?? self.unknownErrorMessage
                 self.completionHandler?(false, errorMessage)
             }
         })
