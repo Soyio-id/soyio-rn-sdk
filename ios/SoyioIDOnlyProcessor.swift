@@ -9,6 +9,8 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
     var fromViewController: UIViewController!
     var idScanResultCallback: FaceTecIDScanResultCallback!
     var sessionId: String = ""
+    var flowCancelledErrorMessage: String = "FLOW_CANCELLED"
+    var unknownErrorMessage: String = "unknown_error"
     var apiErrorMessage: String?
 
     // Dynamic configuration parameters
@@ -26,30 +28,6 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
         self.fromViewController = fromViewController
         self.completionHandler = completionHandler
         super.init()
-
-        // Configure ID Scan upload messages
-        FaceTecCustomization.setIDScanUploadMessageOverrides(
-            frontSideUploadStarted: "Uploading\nEncrypted\nID Scan",
-            frontSideStillUploading: "Still Uploading...\nSlow Connection",
-            frontSideUploadCompleteAwaitingResponse: "Upload Complete",
-            frontSideUploadCompleteAwaitingProcessing: "Processing\nID Scan",
-            backSideUploadStarted: "Uploading\nEncrypted\nBack of ID",
-            backSideStillUploading: "Still Uploading...\nSlow Connection",
-            backSideUploadCompleteAwaitingResponse: "Upload Complete",
-            backSideUploadCompleteAwaitingProcessing: "Processing\nBack of ID",
-            userConfirmedInfoUploadStarted: "Saving\nYour Confirmed Info",
-            userConfirmedInfoStillUploading: "Still Uploading...\nSlow Connection",
-            userConfirmedInfoUploadCompleteAwaitingResponse: "Info Saved",
-            userConfirmedInfoUploadCompleteAwaitingProcessing: "Processing",
-            nfcUploadStarted: "Uploading Encrypted\nNFC Details",
-            nfcStillUploading: "Still Uploading...\nSlow Connection",
-            nfcUploadCompleteAwaitingResponse: "Upload Complete",
-            nfcUploadCompleteAwaitingProcessing: "Processing\nNFC Details",
-            skippedNFCUploadStarted: "Uploading Encrypted\nID Details",
-            skippedNFCStillUploading: "Still Uploading...\nSlow Connection",
-            skippedNFCUploadCompleteAwaitingResponse: "Upload Complete",
-            skippedNFCUploadCompleteAwaitingProcessing: "Processing\nID Details"
-        );
 
         // Create the FaceTec session - only ID scan, no liveness check
         let idScanViewController = FaceTec.sdk.createSessionVC(idScanProcessorDelegate: self, sessionToken: facetecSessionToken)
@@ -74,6 +52,7 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
             if latestNetworkRequest != nil {
                 latestNetworkRequest.cancel()
             }
+            self.apiErrorMessage = self.flowCancelledErrorMessage
             idScanResultCallback.onIDScanResultCancel()
             return
         }
@@ -115,6 +94,9 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
             if let error = responseJSON["error"] as? Bool {
                 if (error) {
                     self.apiErrorMessage = responseJSON["errorMessage"] as? String
+                    if self.apiErrorMessage?.isEmpty ?? true {
+                        self.apiErrorMessage = self.unknownErrorMessage
+                    }
                     idScanResultCallback.onIDScanResultCancel()
                     return
                 }
@@ -130,20 +112,20 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
                 // Configure result screen messages
                 FaceTecCustomization.setIDScanResultScreenMessageOverrides(
                     successFrontSide: "Front Scan Complete",
-                    successFrontSideBackNext: "Front of ID\nScanned",
-                    successFrontSideNFCNext: "Front of ID\nScanned",
-                    successBackSide: "ID Scan Complete",
-                    successBackSideNFCNext: "Back of ID\nScanned",
-                    successPassport: "Passport Scan Complete",
-                    successPassportNFCNext: "Passport Scanned",
-                    successUserConfirmation: "Photo ID Scan\nComplete",
-                    successNFC: "ID Scan Complete",
-                    successAdditionalReview: "ID Photo Capture\nComplete",
-                    retryFaceDidNotMatch: "Face Didn't Match\nHighly Enough",
-                    retryIDNotFullyVisible: "ID Document\nNot Fully Visible",
-                    retryOCRResultsNotGoodEnough: "ID Text Not Legible",
-                    retryIDTypeNotSupported: "ID Type Mismatch\nPlease Try Again",
-                    skipOrErrorNFC: "ID Details\nUploaded"
+                    successFrontSideBackNext: "Lado frontal de la cédula\ncapturado",
+                    successFrontSideNFCNext: "Frente de la cédula\ncapturado",
+                    successBackSide: "Ambos lados fueron\ncapturados y verificados",
+                    successBackSideNFCNext: "Ambos lados fueron\ncapturados y verificados",
+                    successPassport: "Pasaporte capturado",
+                    successPassportNFCNext: "Pasaporte capturado",
+                    successUserConfirmation: "Cédula capturada",
+                    successNFC: "Cédula capturada",
+                    successAdditionalReview: "Cédula capturada",
+                    retryFaceDidNotMatch: "El rostro no coincide\nlo suficiente",
+                    retryIDNotFullyVisible: "La cédula\nno es totalmente visible",
+                    retryOCRResultsNotGoodEnough: "El texto de la cédula no es legible",
+                    retryIDTypeNotSupported: "No se admite este tipo de identificación\nUtiliza una identificación diferente",
+                    skipOrErrorNFC: "Información de la cédula\nsubida"
                 )
 
                 self.success = idScanResultCallback.onIDScanResultProceedToNextStep(scanResultBlob: scanResultBlob)
@@ -174,7 +156,7 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
             if self.success {
                 self.completionHandler?(true, nil)
             } else {
-                let errorMessage = self.apiErrorMessage ?? "FaceTec ID verification did not complete successfully"
+                let errorMessage = self.apiErrorMessage ?? self.unknownErrorMessage
                 self.completionHandler?(false, errorMessage)
             }
         })

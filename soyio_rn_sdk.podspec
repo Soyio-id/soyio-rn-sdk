@@ -14,6 +14,14 @@ Pod::Spec.new do |s|
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
 
+  # Font and image resources
+  s.resource_bundles = {
+    'SoyioRnSdk' => [
+      'assets/fonts/**/*.ttf',
+      'assets/images/SoyioRnSdk.xcassets'
+    ]
+  }
+
   # Vendored FaceTec framework
   s.vendored_frameworks = 'ios/Frameworks/FaceTecSDK.framework'
 

@@ -10,6 +10,8 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
     var fromViewController: UIViewController!
     var faceScanResultCallback: FaceTecFaceScanResultCallback!
     var idScanResultCallback: FaceTecIDScanResultCallback!
+    var flowCancelledErrorMessage: String = "FLOW_CANCELLED"
+    var unknownErrorMessage: String = "unknown_error"
     var sessionId: String = ""
     var apiErrorMessage: String?
 
@@ -31,30 +33,6 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
         self.completionHandler = completionHandler
         super.init()
 
-        // Configure ID Scan upload messages
-        FaceTecCustomization.setIDScanUploadMessageOverrides(
-            frontSideUploadStarted: "Uploading\nEncrypted\nID Scan",
-            frontSideStillUploading: "Still Uploading...\nSlow Connection",
-            frontSideUploadCompleteAwaitingResponse: "Upload Complete",
-            frontSideUploadCompleteAwaitingProcessing: "Processing\nID Scan",
-            backSideUploadStarted: "Uploading\nEncrypted\nBack of ID",
-            backSideStillUploading: "Still Uploading...\nSlow Connection",
-            backSideUploadCompleteAwaitingResponse: "Upload Complete",
-            backSideUploadCompleteAwaitingProcessing: "Processing\nBack of ID",
-            userConfirmedInfoUploadStarted: "Saving\nYour Confirmed Info",
-            userConfirmedInfoStillUploading: "Still Uploading...\nSlow Connection",
-            userConfirmedInfoUploadCompleteAwaitingResponse: "Info Saved",
-            userConfirmedInfoUploadCompleteAwaitingProcessing: "Processing",
-            nfcUploadStarted: "Uploading Encrypted\nNFC Details",
-            nfcStillUploading: "Still Uploading...\nSlow Connection",
-            nfcUploadCompleteAwaitingResponse: "Upload Complete",
-            nfcUploadCompleteAwaitingProcessing: "Processing\nNFC Details",
-            skippedNFCUploadStarted: "Uploading Encrypted\nID Details",
-            skippedNFCStillUploading: "Still Uploading...\nSlow Connection",
-            skippedNFCUploadCompleteAwaitingResponse: "Upload Complete",
-            skippedNFCUploadCompleteAwaitingProcessing: "Processing\nID Details"
-        );
-
         // Create the FaceTec session
         let idScanViewController = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self, idScanProcessorDelegate: self, sessionToken: facetecSessionToken)
         fromViewController.present(idScanViewController, animated: true, completion: nil)
@@ -72,6 +50,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if latestNetworkRequest != nil {
                 latestNetworkRequest.cancel()
             }
+            self.apiErrorMessage = self.flowCancelledErrorMessage
             faceScanResultCallback.onFaceScanResultCancel()
             return
         }
@@ -110,6 +89,9 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if let error = responseJSON["error"] as? Bool {
                 if (error) {
                     self.apiErrorMessage = responseJSON["errorMessage"] as? String
+                    if self.apiErrorMessage?.isEmpty ?? true {
+                        self.apiErrorMessage = self.unknownErrorMessage
+                    }
                     faceScanResultCallback.onFaceScanResultCancel()
                     return
                 }
@@ -124,7 +106,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             let success = responseJSON["success"] as? Bool ?? false
 
             if wasProcessed == true {
-                FaceTecCustomization.setOverrideResultScreenSuccessMessage("Face Scanned\n3D Liveness Proven")
+                FaceTecCustomization.setOverrideResultScreenSuccessMessage("¡Te ves bien!\nSelfie verificada\ncorrectamente")
                 self.faceScanWasSuccessful = faceScanResultCallback.onFaceScanGoToNextStep(scanResultBlob: scanResultBlob)
 
                 // Notify that liveness check was successful (only if success == true)
@@ -143,7 +125,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
         // Update user if upload is taking a while
         DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
             if self.latestNetworkRequest.state == .completed { return }
-            let uploadMessage = NSMutableAttributedString.init(string: "Still Uploading...")
+            let uploadMessage = NSMutableAttributedString.init(string: "Ya casi terminamos...")
             faceScanResultCallback.onFaceScanUploadMessageOverride(uploadMessageOverride: uploadMessage)
         }
     }
@@ -159,6 +141,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if latestNetworkRequest != nil {
                 latestNetworkRequest.cancel()
             }
+            self.apiErrorMessage = self.flowCancelledErrorMessage
             idScanResultCallback.onIDScanResultCancel()
             return
         }
@@ -200,6 +183,9 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if let error = responseJSON["error"] as? Bool {
                 if (error) {
                     self.apiErrorMessage = responseJSON["errorMessage"] as? String
+                    if self.apiErrorMessage?.isEmpty ?? true {
+                        self.apiErrorMessage = self.unknownErrorMessage
+                    }
                     idScanResultCallback.onIDScanResultCancel()
                     return
                 }
@@ -214,21 +200,21 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if wasProcessed == true {
                 // Configure result screen messages
                 FaceTecCustomization.setIDScanResultScreenMessageOverrides(
-                    successFrontSide: "Front Scan Complete",
-                    successFrontSideBackNext: "Front of ID\nScanned",
-                    successFrontSideNFCNext: "Front of ID\nScanned",
-                    successBackSide: "ID Scan Complete",
-                    successBackSideNFCNext: "Back of ID\nScanned",
-                    successPassport: "Passport Scan Complete",
-                    successPassportNFCNext: "Passport Scanned",
-                    successUserConfirmation: "Photo ID Scan\nComplete",
-                    successNFC: "ID Scan Complete",
-                    successAdditionalReview: "ID Photo Capture\nComplete",
-                    retryFaceDidNotMatch: "Face Didn't Match\nHighly Enough",
-                    retryIDNotFullyVisible: "ID Document\nNot Fully Visible",
-                    retryOCRResultsNotGoodEnough: "ID Text Not Legible",
-                    retryIDTypeNotSupported: "ID Type Mismatch\nPlease Try Again",
-                    skipOrErrorNFC: "ID Details\nUploaded"
+                    successFrontSide: "Frente de la cédula\ncapturado",
+                    successFrontSideBackNext: "Lado frontal de la cédula\ncapturado",
+                    successFrontSideNFCNext: "Frente de la cédula\ncapturado",
+                    successBackSide: "Ambos lados fueron\ncapturados y verificados",
+                    successBackSideNFCNext: "Ambos lados fueron\ncapturados y verificados",
+                    successPassport: "Pasaporte capturado",
+                    successPassportNFCNext: "Pasaporte capturado",
+                    successUserConfirmation: "Cédula capturada",
+                    successNFC: "Cédula capturada",
+                    successAdditionalReview: "Cédula capturada",
+                    retryFaceDidNotMatch: "El rostro no coincide\nlo suficiente",
+                    retryIDNotFullyVisible: "La cédula\nno es totalmente visible",
+                    retryOCRResultsNotGoodEnough: "El texto de la cédula no es legible",
+                    retryIDTypeNotSupported: "No se admite este tipo de identificación\nUtiliza una identificación diferente",
+                    skipOrErrorNFC: "Información de la cédula\nsubida"
                 )
 
                 self.success = idScanResultCallback.onIDScanResultProceedToNextStep(scanResultBlob: scanResultBlob)
@@ -264,7 +250,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
             if self.success {
                 self.completionHandler?(true, nil)
             } else {
-                let errorMessage = self.apiErrorMessage ?? "FaceTec verification did not complete successfully"
+                let errorMessage = self.apiErrorMessage ?? self.unknownErrorMessage
                 self.completionHandler?(false, errorMessage)
             }
         })
