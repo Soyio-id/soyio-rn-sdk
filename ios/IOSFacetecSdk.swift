@@ -115,7 +115,7 @@ class IOSFacetecSdk: RCTEventEmitter {
                 if success {
                     resolver(["success": true])
                 } else {
-                    resolver(["success": false, "error": error ?? "Unknown error"])
+                    resolver(["success": false, "error": error ?? "unknown_error"])
                 }
                 self.currentPhotoIDProcessor = nil
             }
@@ -174,7 +174,7 @@ class IOSFacetecSdk: RCTEventEmitter {
                 if success {
                     resolver(["success": true])
                 } else {
-                    resolver(["success": false, "error": error ?? "Unknown error"])
+                    resolver(["success": false, "error": error ?? "unknown_error"])
                 }
                 self.currentIDOnlyProcessor = nil
             }
