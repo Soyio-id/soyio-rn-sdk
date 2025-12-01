@@ -42,6 +42,6 @@ dependencies {
     def kotlinVersion = safeExtGet('kotlinVersion', '1.8.0')
     implementation "com.facebook.react:react-native:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    implementation files('libs/facetec-sdk-9.7.96.aar')
+    compileOnly files('libs/facetec-sdk-9.7.96.aar')
     implementation 'com.squareup.okhttp3:okhttp:3.12.13'
 }
