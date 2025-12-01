@@ -3,7 +3,6 @@ package com.soyio.soyiorndk
 import android.app.Activity
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.facetec.sdk.FaceTecCustomization
 import com.facetec.sdk.FaceTecSDK
 
 class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
@@ -39,7 +38,8 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
     val context = activity ?: reactApplicationContext
 
     val initializeSdk = {
-      applyDefaultCustomization()
+      val theme = if (options.hasKey(THEME) && !options.isNull(THEME)) options.getMap(THEME) else null
+      FacetecConfig.apply(reactApplicationContext, theme)
 
       val callback = { successful: Boolean ->
         isInitialized = successful
@@ -86,12 +86,11 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
       putString(PRODUCTION_KEY_TEXT, config.getString("productionKey") ?: "")
       putString(DEVICE_KEY_IDENTIFIER, config.getString("deviceKey") ?: "")
       putString(PUBLIC_FACE_SCAN_KEY, config.getString("publicKey") ?: "")
+      if (config.hasKey("theme") && !config.isNull("theme")) {
+        putMap(THEME, config.getMap("theme"))
+      }
     }
     initialize(mapped, promise)
-  }
-
-  private fun applyDefaultCustomization() {
-    FaceTecSDK.setCustomization(FaceTecCustomization())
   }
 
   @ReactMethod
@@ -216,6 +215,7 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
     private const val BASE_URL = "baseUrl"
     private const val AUTH_TOKEN = "authToken"
     private const val IS_ID_ONLY = "isIdOnly"
+    private const val THEME = "theme"
     private const val FACETEC_INVALID_CONFIG = "FACETEC_INVALID_CONFIG"
     private const val LIVENESS_SUCCESS_EVENT = "onLivenessSuccess"
     private val TOKEN_PREFIXES = mapOf(
