@@ -50,7 +50,7 @@ class IOSFacetecSdk: RCTEventEmitter {
 
         guard let deviceKey = config["deviceKey"] as? String,
               let publicKey = config["publicKey"] as? String,
-              let productionKey = config["productionKey"] as? String else {
+              let productionKey = config["mobileProductionKey"] as? String else {
             rejecter("INVALID_CONFIG", "Missing required credentials parameters", nil)
             return
         }

@@ -7,13 +7,14 @@ export type SoyioErrors =
 export interface FaceTecCredentials {
   deviceKey: string;
   publicKey: string;
-  productionKey: string;
+  mobileProductionKey: string;
 }
 
 export interface FaceTecCredentialsResponse {
   device_key_identifier: string;
   public_face_scan_encryption_key: string;
-  production_key: string;
+  browser_production_key?: string;
+  mobile_production_key?: string;
 }
 
 export interface FaceTecSessionTokenResponse {

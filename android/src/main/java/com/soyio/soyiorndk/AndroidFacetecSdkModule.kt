@@ -30,7 +30,7 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
       return
     }
 
-    val productionKeyText = options.getNullableString(PRODUCTION_KEY_TEXT, promise) ?: ""
+    val productionKeyText = options.getNullableString(MOBILE_PRODUCTION_KEY_TEXT, promise) ?: ""
     val deviceKeyIdentifier = options.getRequiredString(DEVICE_KEY_IDENTIFIER, promise) ?: return
     val publicFaceScanEncryptionKey = options.getRequiredString(PUBLIC_FACE_SCAN_KEY, promise) ?: return
 
@@ -83,7 +83,7 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun initializeFaceTecSDK(config: ReadableMap, promise: Promise) {
     val mapped = Arguments.createMap().apply {
-      putString(PRODUCTION_KEY_TEXT, config.getString("productionKey") ?: "")
+      putString(MOBILE_PRODUCTION_KEY_TEXT, config.getString("mobileProductionKey") ?: "")
       putString(DEVICE_KEY_IDENTIFIER, config.getString("deviceKey") ?: "")
       putString(PUBLIC_FACE_SCAN_KEY, config.getString("publicKey") ?: "")
       if (config.hasKey("theme") && !config.isNull("theme")) {
@@ -202,7 +202,7 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
 
   companion object {
     const val NAME = "AndroidFacetecSdk"
-    private const val PRODUCTION_KEY_TEXT = "productionKeyText"
+    private const val MOBILE_PRODUCTION_KEY_TEXT = "mobileProductionKeyText"
     private const val DEVICE_KEY_IDENTIFIER = "deviceKeyIdentifier"
     private const val PUBLIC_FACE_SCAN_KEY = "publicFaceScanEncryptionKey"
     private const val FACETEC_INIT_FAILED = "FACETEC_INIT_FAILED"
