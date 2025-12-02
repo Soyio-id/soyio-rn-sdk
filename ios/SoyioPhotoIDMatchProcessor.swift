@@ -71,7 +71,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
         request.addValue(soyioAuthToken, forHTTPHeaderField: "Authorization")
         request.addValue(sessionResult.sessionId, forHTTPHeaderField: "X-Facetec-Session-Id")
         request.addValue(FaceTec.sdk.createFaceTecAPIUserAgentString(sessionResult.sessionId), forHTTPHeaderField: "X-Facetec-User-Agent")
-        request.addValue(SoyioUtils.getCurrentDateISO(), forHTTPHeaderField: "X-Api-Version")
+        request.addValue(ApiDate.iso, forHTTPHeaderField: "X-Api-Version")
 
         let session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: OperationQueue.main)
         latestNetworkRequest = session.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
@@ -165,7 +165,7 @@ class SoyioPhotoIDMatchProcessor: NSObject, Processor, FaceTecFaceScanProcessorD
         request.httpBody = try! JSONSerialization.data(withJSONObject: parameters, options: JSONSerialization.WritingOptions(rawValue: 0))
         request.addValue(soyioAuthToken, forHTTPHeaderField: "Authorization")
         request.addValue(FaceTec.sdk.createFaceTecAPIUserAgentString(self.sessionId), forHTTPHeaderField: "X-Facetec-User-Agent")
-        request.addValue(SoyioUtils.getCurrentDateISO(), forHTTPHeaderField: "X-Api-Version")
+        request.addValue(ApiDate.iso, forHTTPHeaderField: "X-Api-Version")
 
         let session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: OperationQueue.main)
         latestNetworkRequest = session.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
