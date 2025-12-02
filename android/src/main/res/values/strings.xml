@@ -100,7 +100,7 @@
   <string name="soyio_facetec_idscan_nfc_status_weak_connection_message">Intentemos\notro escaneo</string>
   <string name="soyio_facetec_idscan_nfc_status_finished_with_success_message">Escaneo de documentos\ncompletado</string>
   <string name="soyio_facetec_idscan_nfc_status_finished_with_error_message">No se puede leer\nel chip del pasaporte electrónico</string>
-  <string name="soyio_facetec_idscan_nfc_card_status_finished_with_error_message">No se puede leer\nel chip del cédula</string>
+  <string name="soyio_facetec_idscan_nfc_card_status_finished_with_error_message">No se puede leer\nel chip de la cédula</string>
   <string name="soyio_facetec_idscan_nfc_status_skipped_message">Escaneo NFC\nomitido</string>
 
   <!-- Result Messages -->
