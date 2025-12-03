@@ -6,7 +6,7 @@ module.exports = {
       },
       android: {
         sourceDir: './android',
-        packageImportPath: 'import com.soyio.soyiorndk.SoyioRnSdkPackage;',
+        packageImportPath: 'import com.soyio.soyiorndk.AndroidFacetecSdkPackage;',
       },
     },
   },

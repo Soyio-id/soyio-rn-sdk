@@ -25,10 +25,12 @@ export async function getFaceTecCredentials(
 
   const json = await response.json() as FaceTecCredentialsResponse;
 
+  const mobileProductionKey = json.mobile_production_key;
+
   if (
     json.device_key_identifier == null
     || json.public_face_scan_encryption_key == null
-    || json.production_key == null
+    || mobileProductionKey == null
   ) {
     throw new Error('Invalid credentials response: missing required fields');
   }
@@ -36,7 +38,7 @@ export async function getFaceTecCredentials(
   return {
     deviceKey: json.device_key_identifier,
     publicKey: json.public_face_scan_encryption_key,
-    productionKey: json.production_key,
+    mobileProductionKey,
   };
 }
 

@@ -3,7 +3,6 @@ package com.soyio.soyiorndk
 import android.app.Activity
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.facetec.sdk.FaceTecCustomization
 import com.facetec.sdk.FaceTecSDK
 
 class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
@@ -31,7 +30,7 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
       return
     }
 
-    val productionKeyText = options.getNullableString(PRODUCTION_KEY_TEXT, promise) ?: ""
+    val productionKeyText = options.getNullableString(MOBILE_PRODUCTION_KEY_TEXT, promise) ?: ""
     val deviceKeyIdentifier = options.getRequiredString(DEVICE_KEY_IDENTIFIER, promise) ?: return
     val publicFaceScanEncryptionKey = options.getRequiredString(PUBLIC_FACE_SCAN_KEY, promise) ?: return
 
@@ -39,7 +38,8 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
     val context = activity ?: reactApplicationContext
 
     val initializeSdk = {
-      applyDefaultCustomization()
+      val theme = if (options.hasKey(THEME) && !options.isNull(THEME)) options.getMap(THEME) else null
+      FacetecConfig.apply(reactApplicationContext, theme)
 
       val callback = { successful: Boolean ->
         isInitialized = successful
@@ -83,15 +83,14 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun initializeFaceTecSDK(config: ReadableMap, promise: Promise) {
     val mapped = Arguments.createMap().apply {
-      putString(PRODUCTION_KEY_TEXT, config.getString("productionKey") ?: "")
+      putString(MOBILE_PRODUCTION_KEY_TEXT, config.getString("mobileProductionKey") ?: "")
       putString(DEVICE_KEY_IDENTIFIER, config.getString("deviceKey") ?: "")
       putString(PUBLIC_FACE_SCAN_KEY, config.getString("publicKey") ?: "")
+      if (config.hasKey("theme") && !config.isNull("theme")) {
+        putMap(THEME, config.getMap("theme"))
+      }
     }
     initialize(mapped, promise)
-  }
-
-  private fun applyDefaultCustomization() {
-    FaceTecSDK.setCustomization(FaceTecCustomization())
   }
 
   @ReactMethod
@@ -203,7 +202,7 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
 
   companion object {
     const val NAME = "AndroidFacetecSdk"
-    private const val PRODUCTION_KEY_TEXT = "productionKeyText"
+    private const val MOBILE_PRODUCTION_KEY_TEXT = "mobileProductionKeyText"
     private const val DEVICE_KEY_IDENTIFIER = "deviceKeyIdentifier"
     private const val PUBLIC_FACE_SCAN_KEY = "publicFaceScanEncryptionKey"
     private const val FACETEC_INIT_FAILED = "FACETEC_INIT_FAILED"
@@ -216,6 +215,7 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
     private const val BASE_URL = "baseUrl"
     private const val AUTH_TOKEN = "authToken"
     private const val IS_ID_ONLY = "isIdOnly"
+    private const val THEME = "theme"
     private const val FACETEC_INVALID_CONFIG = "FACETEC_INVALID_CONFIG"
     private const val LIVENESS_SUCCESS_EVENT = "onLivenessSuccess"
     private val TOKEN_PREFIXES = mapOf(

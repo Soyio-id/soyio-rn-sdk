@@ -104,7 +104,7 @@ class FacetecStrings {
         "FaceTec_idscan_nfc_status_weak_connection_message": "Intentemos\notro escaneo",
         "FaceTec_idscan_nfc_status_finished_with_success_message": "Escaneo de documentos\ncompletado",
         "FaceTec_idscan_nfc_status_finished_with_error_message": "No se puede leer\nel chip del pasaporte electrónico",
-        "FaceTec_idscan_nfc_card_status_finished_with_error_message": "No se puede leer\nel chip del cédula",
+        "FaceTec_idscan_nfc_card_status_finished_with_error_message": "No se puede leer\nel chip de la cédula",
         "FaceTec_idscan_nfc_status_skipped_message": "Escaneo NFC\nomitido",
 
         // Result Messages

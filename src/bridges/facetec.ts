@@ -7,7 +7,7 @@ interface FaceTecModuleInterface {
   initializeFaceTecSDK: (config: {
     deviceKey: string;
     publicKey: string;
-    productionKey: string;
+    mobileProductionKey: string;
     theme?: {
       mainColor: string;
       highlightColor: string;
@@ -48,7 +48,7 @@ export const handleFaceTecVerification = async (
     const initResult = await FaceTecModule.initializeFaceTecSDK({
       deviceKey: credentials.deviceKey,
       publicKey: credentials.publicKey,
-      productionKey: credentials.productionKey,
+      mobileProductionKey: credentials.mobileProductionKey,
       theme: config.theme || null,
     });
 
