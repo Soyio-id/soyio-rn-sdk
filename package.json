@@ -16,7 +16,8 @@
     "build:esm": "tsc",
     "build:cjs": "tsc --module commonjs",
     "lint": "eslint . --ext .ts",
-    "version:get": "node -p \"require('./package.json').version\""
+    "version:get": "node -p \"require('./package.json').version\"",
+    "sync:api-date": "node scripts/update-api-date.js"
   },
   "peerDependencies": {
     "react": "*",

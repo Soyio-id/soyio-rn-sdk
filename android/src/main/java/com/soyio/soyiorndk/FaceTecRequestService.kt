@@ -46,6 +46,7 @@ internal class FaceTecRequestService(
         "X-Facetec-User-Agent",
         FaceTecSDK.createFaceTecAPIUserAgentString(sessionId ?: ""),
       )
+      .header("X-Api-Version", ApiDate.iso)
       .post(bodyWithProgress)
       .build()
 
