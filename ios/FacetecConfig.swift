@@ -27,21 +27,25 @@ class FacetecConfig {
     }
 
     static func initializeWithCustomCredentials(deviceKey: String, publicKey: String, productionKey: String, themeColors: [String: String]?, completion: @escaping (Bool)->()) {
-        FaceTec.sdk.initializeInDevelopmentMode(deviceKeyIdentifier: deviceKey, faceScanEncryptionKey: publicKey, completion: { initializationSuccessful in
-            let status = FaceTec.sdk.getStatus()
-            if initializationSuccessful {
-                FaceTec.sdk.setDynamicStrings(FacetecStrings.spanish)
-                let customization = FacetecConfig.retrieveConfigurationWizardCustomization(withTheme: themeColors)
-                FaceTec.sdk.setCustomization(customization)
-                FaceTec.sdk.setLowLightCustomization(customization)
-                FaceTec.sdk.setDynamicDimmingCustomization(customization)
-            } else {
-                FaceTec.sdk.auditTrailType = .fullResolution
-                FaceTec.sdk.setMaxAuditTrailImages(.upToSix)
-            }
+        FaceTec.sdk.initializeInProductionMode(
+            productionKeyText: productionKey,
+            deviceKeyIdentifier: deviceKey,
+            faceScanEncryptionKey: publicKey,
+            completion: { initializationSuccessful in
+                if initializationSuccessful {
+                    FaceTec.sdk.setDynamicStrings(FacetecStrings.spanish)
+                    let customization = FacetecConfig.retrieveConfigurationWizardCustomization(withTheme: themeColors)
+                    FaceTec.sdk.setCustomization(customization)
+                    FaceTec.sdk.setLowLightCustomization(customization)
+                    FaceTec.sdk.setDynamicDimmingCustomization(customization)
+                } else {
+                    FaceTec.sdk.auditTrailType = .fullResolution
+                    FaceTec.sdk.setMaxAuditTrailImages(.upToSix)
+                }
 
-            completion(initializationSuccessful)
-        })
+                completion(initializationSuccessful)
+            }
+        )
     }
 
 
