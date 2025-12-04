@@ -8,7 +8,6 @@ import com.facetec.sdk.FaceTecCancelButtonCustomization
 import com.facetec.sdk.FaceTecCustomization
 import com.facetec.sdk.FaceTecSDK
 import com.facetec.sdk.FaceTecSecurityWatermarkImage
-import java.util.Locale
 
 internal object FacetecConfig {
   fun apply(reactContext: ReactApplicationContext, theme: ReadableMap?) {
@@ -145,18 +144,6 @@ internal object FacetecConfig {
   }
 
   private fun applySpanishLocalization(reactContext: ReactApplicationContext) {
-    val localeEs = Locale("es")
-    try {
-      val setLanguage = FaceTecSDK::class.java.methods.firstOrNull { method ->
-        method.name == "setLanguage" &&
-          method.parameterTypes.size == 1 &&
-          method.parameterTypes[0] == Locale::class.java
-      }
-      setLanguage?.invoke(null, localeEs)
-    } catch (_: Exception) {
-      // Ignore and fall back to dynamic strings override.
-    }
-
     try {
       val resources = reactContext.resources
       // FaceTec resources merge into the host app package, so resolve ids from the host package.
