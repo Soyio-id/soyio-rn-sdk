@@ -3,7 +3,13 @@
 !package/**
 !index.ts
 !ios/**
+!android/**
 !assets/**
 !react-native.config.js
 !soyio_rn_sdk.podspec
 !README.md
+
+android/build/**
+android/.gradle/**
+android/.idea/**
+android/local.properties
