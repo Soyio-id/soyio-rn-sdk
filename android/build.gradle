@@ -40,6 +40,9 @@ android {
 }
 
 repositories {
+    flatDir {
+        dirs 'libs'
+    }
     google()
     mavenCentral()
 }
@@ -48,6 +51,6 @@ dependencies {
     def kotlinVersion = safeExtGet('kotlinVersion', '1.8.0')
     implementation "com.facebook.react:react-native:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    compileOnly files('libs/facetec-sdk-9.7.96.aar')
-    implementation 'com.squareup.okhttp3:okhttp:3.12.13'
+    implementation(name: "facetec-sdk-9.7.96", ext: "aar")
+    implementation "com.squareup.okhttp3:okhttp:3.12.13"
 }
