@@ -30,7 +30,7 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
       return
     }
 
-    val productionKeyText = options.getNullableString(MOBILE_PRODUCTION_KEY_TEXT, promise) ?: ""
+    val productionKeyText = options.getRequiredString(MOBILE_PRODUCTION_KEY_TEXT, promise) ?: return
     val deviceKeyIdentifier = options.getRequiredString(DEVICE_KEY_IDENTIFIER, promise) ?: return
     val publicFaceScanEncryptionKey = options.getRequiredString(PUBLIC_FACE_SCAN_KEY, promise) ?: return
 
@@ -55,22 +55,13 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
         }
       }
 
-      if (productionKeyText.isBlank()) {
-        FaceTecSDK.initializeInDevelopmentMode(
-          context,
-          deviceKeyIdentifier,
-          publicFaceScanEncryptionKey,
-          callback,
-        )
-      } else {
-        FaceTecSDK.initializeInProductionMode(
-          context,
-          productionKeyText,
-          deviceKeyIdentifier,
-          publicFaceScanEncryptionKey,
-          callback,
-        )
-      }
+      FaceTecSDK.initializeInProductionMode(
+        context,
+        productionKeyText,
+        deviceKeyIdentifier,
+        publicFaceScanEncryptionKey,
+        callback,
+      )
     }
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -190,14 +181,6 @@ class AndroidFacetecSdkModule(reactContext: ReactApplicationContext) :
     }
 
     return value
-  }
-
-  private fun ReadableMap.getNullableString(key: String, promise: Promise): String? {
-    if (!hasKey(key)) {
-      return null
-    }
-
-    return getString(key)
   }
 
   companion object {
