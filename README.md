@@ -52,7 +52,7 @@ dependencyResolutionManagement {
     // Add this flatDir so bundled native dependencies are resolvable:
     flatDir {
       dirs(
-        "$rootDir/../node_modules/@soyio/soyio-rn-sdk/android",
+        "$rootDir/../node_modules/@soyio/soyio-rn-sdk/android/libs",
       )
     }
   }
