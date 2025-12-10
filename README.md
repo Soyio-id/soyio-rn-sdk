@@ -67,6 +67,13 @@ dependencyResolutionManagement {
 <uses-feature android:name="android.hardware.camera" android:required="true" />
 ```
 
+If you want to enable NFC validation with the `SoyioWidget`, also add:
+
+```xml
+<uses-permission android:name="android.permission.NFC" />
+<uses-feature android:name="android.hardware.nfc" android:required="false" />
+```
+
 3) Deep link for returning from the in-app browser: add an intent filter in your main `<activity>` with your chosen scheme (must match `uriScheme` passed to the SDK)
 
 ```xml
