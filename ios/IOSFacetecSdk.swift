@@ -18,6 +18,37 @@ class IOSFacetecSdk: RCTEventEmitter {
         return ["onLivenessSuccess"]
     }
 
+    private func getStatusErrorMessage(_ status: FaceTecSDKStatus) -> String {
+        switch status {
+        case .neverInitialized:
+            return "Initialize was never attempted"
+        case .initialized:
+            return "SDK initialized successfully"
+        case .networkIssues:
+            return "Could not verify credentials due to network issues"
+        case .invalidDeviceKeyIdentifier:
+            return "Invalid Device SDK Key Identifier"
+        case .versionDeprecated:
+            return "This version of FaceTec SDK is deprecated. Please update the SDK"
+        case .offlineSessionsExceeded:
+            return "Device SDK Key Identifier needs to be verified again"
+        case .unknownError:
+            return "An unknown error occurred"
+        case .deviceLockedOut:
+            return "Device is locked out due to too many failures"
+        case .deviceInLandscapeMode:
+            return "Device must be in portrait mode"
+        case .deviceInReversePortraitMode:
+            return "Device must be in portrait mode (not reverse portrait)"
+        case .keyExpiredOrInvalid:
+            return "Device SDK Key expired or invalid. Verify credentials at dev.facetec.com and check that Bundle ID matches"
+        case .encryptionKeyInvalid:
+            return "The public encryption key is invalid"
+        @unknown default:
+            return "Initialization failed with unknown status: \(status.rawValue)"
+        }
+    }
+
     @objc
     func startLivenessAndIDVerification(_ config: NSDictionary,
                           resolver: @escaping RCTPromiseResolveBlock,
@@ -55,6 +86,13 @@ class IOSFacetecSdk: RCTEventEmitter {
             return
         }
 
+        let status = FaceTec.sdk.getStatus()
+        if status == .initialized {
+            resolver(["success": true])
+            return
+        }
+
+        // Apply customization before initializing (matching Android pattern)
         var themeColors: [String: String]? = nil
         if let theme = config["theme"] as? [String: Any] {
             themeColors = [
@@ -63,26 +101,24 @@ class IOSFacetecSdk: RCTEventEmitter {
                 "disabledColor": theme["disabledColor"] as? String ?? ""
             ]
         }
+        FacetecConfig.apply(theme: themeColors)
 
-        let status = FaceTec.sdk.getStatus()
-        if status == .initialized {
-            resolver(["success": true])
-            return
-        }
-
-        FacetecConfig.initializeWithCustomCredentials(
-            deviceKey: deviceKey,
-            publicKey: publicKey,
-            productionKey: productionKey,
-            themeColors: themeColors
-        ) { success in
-            if success {
-                resolver(["success": true])
-            } else {
-                let sdkStatus = FaceTec.sdk.getStatus()
-                resolver(["success": false, "error": "SDK initialization failed with status: \(sdkStatus.rawValue)"])
+        // Initialize SDK directly (matching Android pattern)
+        FaceTec.sdk.initializeInProductionMode(
+            productionKeyText: productionKey,
+            deviceKeyIdentifier: deviceKey,
+            faceScanEncryptionKey: publicKey,
+            completion: { initializationSuccessful in
+                if initializationSuccessful {
+                    resolver(["success": true])
+                } else {
+                    let sdkStatus = FaceTec.sdk.getStatus()
+                    print("[FaceTec] Initialization failed with status: \(sdkStatus.rawValue) (\(sdkStatus))")
+                    let errorMessage = self.getStatusErrorMessage(sdkStatus)
+                    resolver(["success": false, "error": errorMessage])
+                }
             }
-        }
+        )
     }
 
     private func startLivenessAndIDVerificationFlow(facetecSessionToken: String,

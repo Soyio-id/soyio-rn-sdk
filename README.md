@@ -87,7 +87,65 @@ If you want to enable NFC validation with the `SoyioWidget`, also add:
 
 After changes, rebuild the Android app (`cd android && ./gradlew :app:assembleDebug` or `yarn android`).
 
-### URI Scheme Setup
+## iOS Setup (permissions, NFC, deep links)
+
+Add these to your app so native dependencies, NFC scanning, and deep linking work when consuming the SDK from npm.
+
+### 1. Native Dependencies
+
+After installing the package and peer dependencies, run:
+
+```sh
+cd ios && pod install
+```
+
+### 2. Permissions
+
+Add the following permissions to your `ios/YourApp/Info.plist` file:
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>This app needs access to camera for document verification</string>
+```
+
+If you want to enable NFC validation with the `SoyioWidget`, also add:
+
+```xml
+<key>NFCReaderUsageDescription</key>
+<string>This app needs access to NFC for identity document verification</string>
+
+<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+<array>
+    <string>A0000002471001</string>
+    <string>A0000002472001</string>
+</array>
+```
+
+### 3. NFC Entitlements
+
+For NFC to work, you also need to create (or update) your entitlements file at `ios/YourApp/YourApp.entitlements`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.developer.nfc.readersession.formats</key>
+    <array>
+        <string>TAG</string>
+    </array>
+</dict>
+</plist>
+```
+
+Then, in Xcode, ensure the entitlements file is linked to your target:
+1. Select your project in Xcode
+2. Go to your app target's **Signing & Capabilities** tab
+3. Add **Near Field Communication Tag Reading** capability (if not already added)
+4. Verify the entitlements file path is set in **Build Settings → Code Signing Entitlements**
+
+
+## URI Scheme Setup
 
 You need to configure a custom URI scheme for your application to handle deep linking properly:
 
@@ -96,33 +154,6 @@ npx uri-scheme add custom-uri-scheme
 ```
 
 Replace `custom-uri-scheme` with your desired scheme name. This scheme should match the `uriScheme` parameter you use in the `SoyioWidget` options.
-
-### iOS Permissions
-
-Add the following permission to your `ios/YourApp/Info.plist` file to enable camera access for document verification:
-
-```xml
-<key>NSCameraUsageDescription</key>
-<string>This app needs access to camera for document verification</string>
-```
-
-### iOS FaceTec Native Integration
-
-This SDK includes native FaceTec integration for iOS. After installing the package and peer dependencies, run:
-
-```sh
-cd ios && pod install
-```
-
-**Troubleshooting:**
-
-If you encounter the error `FaceTec module not available`, ensure:
-
-1. You've run `pod install` in the iOS directory
-2. Clean build folder in Xcode: **Product → Clean Build Folder**
-3. Rebuild the app
-
-The native module should be automatically linked via React Native autolinking.
 
 ## Usage
 

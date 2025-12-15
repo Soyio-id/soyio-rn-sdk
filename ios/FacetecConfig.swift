@@ -26,26 +26,12 @@ class FacetecConfig {
         return UIFont.systemFont(ofSize: size, weight: weight)
     }
 
-    static func initializeWithCustomCredentials(deviceKey: String, publicKey: String, productionKey: String, themeColors: [String: String]?, completion: @escaping (Bool)->()) {
-        FaceTec.sdk.initializeInProductionMode(
-            productionKeyText: productionKey,
-            deviceKeyIdentifier: deviceKey,
-            faceScanEncryptionKey: publicKey,
-            completion: { initializationSuccessful in
-                if initializationSuccessful {
-                    FaceTec.sdk.setDynamicStrings(FacetecStrings.spanish)
-                    let customization = FacetecConfig.retrieveConfigurationWizardCustomization(withTheme: themeColors)
-                    FaceTec.sdk.setCustomization(customization)
-                    FaceTec.sdk.setLowLightCustomization(customization)
-                    FaceTec.sdk.setDynamicDimmingCustomization(customization)
-                } else {
-                    FaceTec.sdk.auditTrailType = .fullResolution
-                    FaceTec.sdk.setMaxAuditTrailImages(.upToSix)
-                }
-
-                completion(initializationSuccessful)
-            }
-        )
+    static func apply(theme: [String: String]?) {
+        FaceTec.sdk.setDynamicStrings(FacetecStrings.spanish)
+        let customization = FacetecConfig.retrieveConfigurationWizardCustomization(withTheme: theme)
+        FaceTec.sdk.setCustomization(customization)
+        FaceTec.sdk.setLowLightCustomization(customization)
+        FaceTec.sdk.setDynamicDimmingCustomization(customization)
     }
 
 

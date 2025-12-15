@@ -111,7 +111,7 @@ class SoyioIDOnlyProcessor: NSObject, Processor, FaceTecIDScanProcessorDelegate,
             if wasProcessed == true {
                 // Configure result screen messages
                 FaceTecCustomization.setIDScanResultScreenMessageOverrides(
-                    successFrontSide: "Front Scan Complete",
+                    successFrontSide: "Frente de la cédula\ncapturado",
                     successFrontSideBackNext: "Lado frontal de la cédula\ncapturado",
                     successFrontSideNFCNext: "Frente de la cédula\ncapturado",
                     successBackSide: "Ambos lados fueron\ncapturados y verificados",
