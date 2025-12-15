@@ -8,8 +8,9 @@ on:
 jobs:
   npm-release:
     runs-on: ubuntu-latest
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -26,7 +27,7 @@ jobs:
         run: yarn run build
 
       - name: Publish the package
-        run: npm publish
+        run: npm publish --provenance --access public
 
   github-release:
     needs: npm-release
