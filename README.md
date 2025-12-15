@@ -42,7 +42,7 @@ yarn add react-native-webview react-native-inappbrowser-reborn
 
 Add these to your app so bundled native dependencies and deep linking work when consuming the SDK from npm.
 
-1) Repositories (`android/settings.gradle`)
+1) Repositories (`android/settings.gradle`) - **Only required if you want to use NFC validation**
 
 ```gradle
 dependencyResolutionManagement {
