@@ -1,16 +1,22 @@
 import { Platform } from 'react-native';
 import type { WebView, WebViewMessageEvent } from 'react-native-webview';
 
-import { handlePasskeyAuthentication, handlePasskeyRequired } from '../passkey-bridge';
+import { handleFaceTecVerification } from '../bridges/facetec';
+import { handlePasskeyAuthentication, handlePasskeyRequired } from '../bridges/passkey';
 import type {
   AuthRequestParams,
   DisclosureParams,
+  FaceTecConfigRequired,
+  FaceTecRequired,
+  FaceTecThemeColors,
   PasskeyRegistrationRequired,
   SoyioWidgetOptions,
   WebViewEvent,
 } from '../types';
 
+import { computeFaceTecColors, isValidHexColor } from './color';
 import { isAuthenticationRequest, isDisclosureRequest } from './type-guards';
+import { resolveBaseUrl } from './url-builder';
 
 interface MessageHandlerDependencies {
   options: SoyioWidgetOptions;
@@ -19,8 +25,10 @@ interface MessageHandlerDependencies {
   onSuccess?: () => void;
 }
 
-function postMessageToWebView(webViewRef: React.RefObject<WebView>, messageType: string): void {
-  const message = JSON.stringify({ type: messageType });
+let cachedFaceTecTheme: FaceTecThemeColors | null = null;
+
+function postMessageToWebView(webViewRef: React.RefObject<WebView>, messageObject: object): void {
+  const message = JSON.stringify(messageObject);
 
   if (Platform.OS === 'android') {
     webViewRef.current.injectJavaScript(`
@@ -57,7 +65,7 @@ function handlePasskeyRequiredEvent(
       uriScheme: options.uriScheme,
       isSandbox: options.isSandbox,
       developmentUrl: options.developmentUrl,
-      onComplete: () => postMessageToWebView(webViewRef, 'PASSKEY_REGISTERED'),
+      onComplete: () => postMessageToWebView(webViewRef, { type: 'PASSKEY_REGISTERED' }),
     });
   }
 }
@@ -74,7 +82,51 @@ function handlePasskeyAuthenticationEvent(
     uriScheme: options.uriScheme,
     isSandbox: options.isSandbox,
     developmentUrl: options.developmentUrl,
-    onComplete: () => postMessageToWebView(webViewRef, 'PASSKEY_AUTHENTICATED'),
+    onComplete: () => postMessageToWebView(webViewRef, { type: 'PASSKEY_AUTHENTICATED' }),
+  });
+}
+
+function handleFaceTecConfigEvent(
+  eventData: FaceTecConfigRequired,
+): void {
+  const { mainColor } = eventData;
+
+  if (!isValidHexColor(mainColor)) return;
+
+  cachedFaceTecTheme = computeFaceTecColors(mainColor);
+}
+
+function handleFaceTecRequiredEvent(
+  eventData: FaceTecRequired,
+  dependencies: MessageHandlerDependencies,
+): void {
+  const { options, webViewRef, requestParams } = dependencies;
+
+  if (!isDisclosureRequest(requestParams)) return;
+
+  const baseUrl = resolveBaseUrl(options);
+  const isLivenessAndPhotoIDMode = eventData.type === 'FACETEC_LIVENESS_PHOTO_ID_REQUIRED';
+
+  const config = isLivenessAndPhotoIDMode
+    ? {
+      mode: 'liveness-and-id' as const,
+      soyioSessionToken: eventData.sessionToken,
+      disclosureRequestToken: eventData.requestableToken,
+      baseUrl,
+      theme: cachedFaceTecTheme,
+      onLivenessSuccess: () => postMessageToWebView(webViewRef, { type: 'FACETEC_LIVENESS_SUCCESS' }),
+    }
+    : {
+      mode: 'id-only' as const,
+      soyioSessionToken: eventData.sessionToken,
+      disclosureRequestToken: eventData.requestableToken,
+      baseUrl,
+      theme: cachedFaceTecTheme,
+    };
+
+  handleFaceTecVerification(config).catch((error) => {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    postMessageToWebView(webViewRef, { type: 'FACETEC_ERROR', error: errorMessage });
   });
 }
 
@@ -106,6 +158,15 @@ export function buildMessageHandler(
 
         case 'PASSKEY_AUTHENTICATION_REQUIRED':
           handlePasskeyAuthenticationEvent(dependencies);
+          break;
+
+        case 'FACETEC_MAIN_THEME':
+          handleFaceTecConfigEvent(eventData);
+          break;
+
+        case 'FACETEC_LIVENESS_PHOTO_ID_REQUIRED':
+        case 'FACETEC_ID_ONLY_REQUIRED':
+          handleFaceTecRequiredEvent(eventData, dependencies);
           break;
 
         default:

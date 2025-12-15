@@ -10,7 +10,7 @@ import { isExistingDisclosureRequest } from './type-guards';
 
 const WIDGET_PATH_PREFIX = 'widget';
 
-function determineBaseUrl(options: SoyioWidgetOptions): string {
+export function resolveBaseUrl(options: SoyioWidgetOptions): string {
   if (options.developmentUrl) {
     return options.developmentUrl;
   }
@@ -61,7 +61,7 @@ export function buildUrl(
   requestParams: DisclosureParams | AuthRequestParams,
   isWebview = true,
 ): string {
-  const baseUrl = determineBaseUrl(options);
+  const baseUrl = resolveBaseUrl(options);
   const path = determineRequestPath(requestType, requestParams);
   const fullPath = `${baseUrl}/${WIDGET_PATH_PREFIX}/${path}`;
 

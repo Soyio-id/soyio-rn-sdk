@@ -1,0 +1,134 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!-- Actions -->
+  <string name="soyio_facetec_action_ok">Aceptar</string>
+  <string name="soyio_facetec_action_im_ready">Comenzar validación</string>
+  <string name="soyio_facetec_action_try_again">Volver a intentarlo</string>
+  <string name="soyio_facetec_action_continue">Continuar</string>
+  <string name="soyio_facetec_action_take_photo">Tomar foto</string>
+  <string name="soyio_facetec_action_accept_photo">Aceptar</string>
+  <string name="soyio_facetec_action_retake_photo">Volver</string>
+  <string name="soyio_facetec_action_confirm">Confirmar información</string>
+  <string name="soyio_facetec_action_scan_nfc">Escanear NFC</string>
+  <string name="soyio_facetec_action_scan_nfc_card">Escanear chip</string>
+  <string name="soyio_facetec_action_skip_nfc">Omitir este paso</string>
+
+  <!-- Accessibility -->
+  <string name="soyio_facetec_accessibility_cancel_button">Cancelar</string>
+  <string name="soyio_facetec_accessibility_torch_button">Interruptor de iluminación</string>
+  <string name="soyio_facetec_accessibility_tap_guidance">Toca dos veces cualquier parte de la pantalla para ver indicaciones sobre cómo alinear tu rostro.</string>
+  <string name="soyio_facetec_accessibility_feedback_move_phone_away">Tu rostro está demasiado cerca</string>
+  <string name="soyio_facetec_accessibility_feedback_move_phone_closer">Tu rostro está demasiado lejos</string>
+  <string name="soyio_facetec_accessibility_feedback_face_too_far_left">Tu rostro está demasiado a la izquierda</string>
+  <string name="soyio_facetec_accessibility_feedback_face_too_far_right">Tu rostro está demasiado a la derecha</string>
+  <string name="soyio_facetec_accessibility_feedback_face_too_low">Tu rostro está demasiado abajo</string>
+  <string name="soyio_facetec_accessibility_feedback_face_too_high">Tu rostro está demasiado arriba</string>
+  <string name="soyio_facetec_accessibility_feedback_face_rotated_too_far_left">Tu rostro gira demasiado a la izquierda</string>
+  <string name="soyio_facetec_accessibility_feedback_face_rotated_too_far_right">Tu rostro gira demasiado a la derecha</string>
+  <string name="soyio_facetec_accessibility_feedback_face_pointing_too_far_left">Tu rostro está demasiado inclinado hacia la izquierda</string>
+  <string name="soyio_facetec_accessibility_feedback_face_pointing_too_far_right">Tu rostro está demasiado inclinado hacia la derecha</string>
+  <string name="soyio_facetec_accessibility_feedback_face_not_on_camera">El rostro no se ve en la cámara o está demasiado lejos</string>
+  <string name="soyio_facetec_accessibility_feedback_hold_device_to_eye_level">Mantén el dispositivo a la altura de los ojos</string>
+
+  <!-- Presession -->
+  <string name="soyio_facetec_presession_frame_your_face">Encuadra tu rostro en el óvalo</string>
+  <string name="soyio_facetec_presession_position_face_straight_in_oval">Mira hacia el frente</string>
+  <string name="soyio_facetec_presession_hold_steady_3">Mantente quieto durante: 3</string>
+  <string name="soyio_facetec_presession_hold_steady_2">Mantente quieto durante: 2</string>
+  <string name="soyio_facetec_presession_hold_steady_1">Mantente quieto durante: 1</string>
+  <string name="soyio_facetec_presession_remove_dark_glasses">Quítate los lentes oscuros</string>
+  <string name="soyio_facetec_presession_neutral_expression">Expresión neutra, sin sonreír</string>
+  <string name="soyio_facetec_presession_conditions_too_bright">Demasiada luz</string>
+  <string name="soyio_facetec_presession_brighten_your_environment">Ilumina tu entorno</string>
+
+  <!-- Feedback -->
+  <string name="soyio_facetec_feedback_center_face">Centra tu rostro</string>
+  <string name="soyio_facetec_feedback_face_not_found">Encuadra tu rostro</string>
+  <string name="soyio_facetec_feedback_move_phone_away">Aléjate</string>
+  <string name="soyio_facetec_feedback_move_phone_closer">Acércate</string>
+  <string name="soyio_facetec_feedback_move_phone_to_eye_level">Coloca la cámara a la altura de los ojos</string>
+  <string name="soyio_facetec_feedback_face_not_looking_straight_ahead">Mira hacia el frente</string>
+  <string name="soyio_facetec_feedback_face_not_upright">Mantén la cabeza recta</string>
+  <string name="soyio_facetec_feedback_hold_steady">Quédate quieto</string>
+  <string name="soyio_facetec_feedback_use_even_lighting">Ilumina el rostro de forma más uniforme</string>
+
+  <!-- Instructions -->
+  <string name="soyio_facetec_instructions_header_ready_1"></string>
+  <string name="soyio_facetec_instructions_header_ready_2">Prepárate para la selfie</string>
+  <string name="soyio_facetec_instructions_message_ready_1">Alinea tu rostro dentro del óvalo</string>
+  <string name="soyio_facetec_instructions_message_ready_2"></string>
+
+  <!-- Retry -->
+  <string name="soyio_facetec_retry_header">Intentémoslo otra vez</string>
+  <string name="soyio_facetec_retry_subheader_message">Necesitamos una selfie más nítida</string>
+  <string name="soyio_facetec_retry_your_image_label">Tu selfie</string>
+  <string name="soyio_facetec_retry_ideal_image_label">Pose ideal</string>
+  <string name="soyio_facetec_retry_instruction_message_1">Usa una pose y iluminación ideal</string>
+  <string name="soyio_facetec_retry_instruction_message_2">Expresión neutra, sin sonreír</string>
+  <string name="soyio_facetec_retry_instruction_message_3">Demasiado borrosa, limpie la cámara</string>
+
+  <!-- Camera Permission -->
+  <string name="soyio_facetec_camera_permission_header">Habilita la cámara</string>
+  <string name="soyio_facetec_camera_permission_message_enroll">Permisos de cámara deshabilitados.\nVerifique la configuración de tu sistema operativo</string>
+  <string name="soyio_facetec_camera_permission_message_auth">Permisos de cámara deshabilitados.\nVerifique la configuración de tu sistema operativo</string>
+  <string name="soyio_facetec_camera_permission_enable_camera">Habilitar la cámara</string>
+  <string name="soyio_facetec_camera_permission_launch_settings">Abrir la configuración</string>
+
+  <!-- Initializing -->
+  <string name="soyio_facetec_initializing_camera">Estamos protegiendo la conexión ...</string>
+
+  <!-- ID Scan -->
+  <string name="soyio_facetec_idscan_type_selection_header">Ahora, prepárate para\nescanear tu cédula</string>
+  <string name="soyio_facetec_idscan_capture_id_front_instruction_message">Frente de tu cédula</string>
+  <string name="soyio_facetec_idscan_capture_id_back_instruction_message">Reverso de tu cédula</string>
+  <string name="soyio_facetec_idscan_review_id_front_instruction_message">Verifica que sea nítida y legible</string>
+  <string name="soyio_facetec_idscan_review_id_back_instruction_message">Verifica que sea nítida y legible</string>
+  <string name="soyio_facetec_idscan_additional_review_message">Se requiere\nuna verificación adicional</string>
+  <string name="soyio_facetec_idscan_ocr_confirmation_main_header">Revisar y confirmar</string>
+  <string name="soyio_facetec_idscan_ocr_confirmation_scroll_message">Desplácese hacia abajo</string>
+  <string name="soyio_facetec_idscan_feedback_flip_id_to_back_message">Sigamos con el reverso de tu cédula</string>
+  <string name="soyio_facetec_idscan_capture_screen_focus_message">Presiona para enfocar</string>
+  <string name="soyio_facetec_idscan_capture_tap_to_focus_message">Toca la pantalla para enfocar</string>
+  <string name="soyio_facetec_idscan_capture_hold_steady_message">Mantente quieto</string>
+
+  <!-- ID Scan - NFC -->
+  <string name="soyio_facetec_idscan_nfc_status_disabled_message">Habilita el NFC\nen la configuración de tu dispositivo\npara continuar</string>
+  <string name="soyio_facetec_idscan_nfc_status_ready_message">Prepárate para escanear\nel chip de tu pasaporte electrónico</string>
+  <string name="soyio_facetec_idscan_nfc_card_status_ready_message">Prepárate para escanear\nel chip de tu cédula</string>
+  <string name="soyio_facetec_idscan_nfc_status_starting_message">Acerca el teléfono a la parte\nposterior del ePasaporte\npara escanear el chip NFC</string>
+  <string name="soyio_facetec_idscan_nfc_card_status_starting_message">Acerca el teléfono a tu cédula\npara escanear el chip NFC</string>
+  <string name="soyio_facetec_idscan_nfc_status_scanning_message">Manténlo quieto,\nescaneando el chip NFC</string>
+  <string name="soyio_facetec_idscan_nfc_status_weak_connection_message">Intentemos\notro escaneo</string>
+  <string name="soyio_facetec_idscan_nfc_status_finished_with_success_message">Escaneo de documentos\ncompletado</string>
+  <string name="soyio_facetec_idscan_nfc_status_finished_with_error_message">No se puede leer\nel chip del pasaporte electrónico</string>
+  <string name="soyio_facetec_idscan_nfc_card_status_finished_with_error_message">No se puede leer\nel chip de la cédula</string>
+  <string name="soyio_facetec_idscan_nfc_status_skipped_message">Escaneo NFC\nomitido</string>
+
+  <!-- Result Messages -->
+  <string name="soyio_facetec_result_success_message">Validación de identidad completa</string>
+  <string name="soyio_facetec_result_facescan_upload_message">Analizando tu selfie</string>
+  <string name="soyio_facetec_result_idscan_upload_message">Analizando la imagen de la\ncédula</string>
+  <string name="soyio_facetec_result_nfc_upload_message">Analizando la información NFC</string>
+  <string name="soyio_facetec_result_idscan_unsuccess_message">La foto de la cédula\nno coincide con el rostro del usuario</string>
+  <string name="soyio_facetec_result_idscan_success_front_side_message">Escaneo de cédula completado</string>
+  <string name="soyio_facetec_result_idscan_success_front_side_back_next_message">Lado frontal de la cédula\nescaneado</string>
+  <string name="soyio_facetec_result_idscan_success_front_side_nfc_next_message">Frente de la cédula\nescaneado</string>
+  <string name="soyio_facetec_result_idscan_success_back_side_message">Escaneo de cédula completado</string>
+  <string name="soyio_facetec_result_idscan_success_back_side_nfc_next_message">Reverso de la cédula\nescaneado</string>
+  <string name="soyio_facetec_result_idscan_success_passport_message">Escaneo de pasaporte completado</string>
+  <string name="soyio_facetec_result_idscan_success_passport_nfc_next_message">Pasaporte escaneado</string>
+  <string name="soyio_facetec_result_idscan_success_user_confirmation_message">Escaneo de la cédula con fotografía\ncompletado</string>
+  <string name="soyio_facetec_result_idscan_success_nfc_message">Escaneo de cédula completado</string>
+  <string name="soyio_facetec_result_idscan_success_additional_review_message">Captura de la fotografía de la cédula\ncompletada</string>
+  <string name="soyio_facetec_result_idscan_skip_or_error_nfc_message">Información de la cédula\nsubida</string>
+  <string name="soyio_facetec_result_idscan_retry_face_did_not_match_message">El rostro no coincide\nlo suficiente</string>
+  <string name="soyio_facetec_result_idscan_retry_id_not_fully_visible_message">La cédula\nno es totalmente visible</string>
+  <string name="soyio_facetec_result_idscan_retry_ocr_results_not_good_enough_message">El texto de la cédula no es legible</string>
+  <string name="soyio_facetec_result_idscan_retry_id_type_not_supported_message">No se admite este tipo de identificación\nUtiliza una identificación diferente</string>
+  <string name="soyio_facetec_result_idscan_retry_barcode_not_read_message">No se pudo escanear el código de barras\nInténtalo de nuevo</string>
+
+  <!-- Retry - Official ID Photo -->
+  <string name="soyio_facetec_retry_official_id_photo_subheader_message">La foto debe tener más calidad</string>
+  <string name="soyio_facetec_retry_official_id_photo_instruction_message">Usa luz interior,\nsin sonreír, lentes con reflejos o sombrero</string>
+  <string name="soyio_facetec_retry_official_id_photo_your_image_label">Tu imagen</string>
+  <string name="soyio_facetec_retry_official_id_photo_ideal_image_label">Cara conforme</string>
+</resources>

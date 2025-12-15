@@ -38,6 +38,55 @@ yarn add react-native-webview react-native-inappbrowser-reborn
 
 **Android Setup:** For React Native 0.60+, auto-linking should handle Android setup automatically. For older versions, follow the [manual linking guide](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Getting-Started.md).
 
+## Android setup (repositories, permissions, deep links)
+
+Add these to your app so bundled native dependencies and deep linking work when consuming the SDK from npm.
+
+1) Repositories (`android/settings.gradle`) - **Only required if you want to use NFC validation**
+
+```gradle
+dependencyResolutionManagement {
+  repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+  repositories {
+    // Keep your normal repositories here (e.g., google(), mavenCentral()) as appropriate for your project/architecture.
+    // Add this flatDir so bundled native dependencies are resolvable:
+    flatDir {
+      dirs(
+        "$rootDir/../node_modules/@soyio/soyio-rn-sdk/android/libs",
+      )
+    }
+  }
+}
+```
+
+2) Manifest entries (`android/app/src/main/AndroidManifest.xml` inside `<manifest>`)
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-feature android:name="android.hardware.camera" android:required="true" />
+```
+
+If you want to enable NFC validation with the `SoyioWidget`, also add:
+
+```xml
+<uses-permission android:name="android.permission.NFC" />
+<uses-feature android:name="android.hardware.nfc" android:required="false" />
+```
+
+3) Deep link for returning from the in-app browser: add an intent filter in your main `<activity>` with your chosen scheme (must match `uriScheme` passed to the SDK)
+
+```xml
+<intent-filter>
+  <action android:name="android.intent.action.VIEW" />
+  <category android:name="android.intent.category.DEFAULT" />
+  <category android:name="android.intent.category.BROWSABLE" />
+  <data android:scheme="your-app-scheme" />
+</intent-filter>
+```
+
+After changes, rebuild the Android app (`cd android && ./gradlew :app:assembleDebug` or `yarn android`).
+
 ### URI Scheme Setup
 
 You need to configure a custom URI scheme for your application to handle deep linking properly:
@@ -57,22 +106,34 @@ Add the following permission to your `ios/YourApp/Info.plist` file to enable cam
 <string>This app needs access to camera for document verification</string>
 ```
 
-### Android Permissions
-Add the following permission and feature declaration to your `android/app/src/main/AndroidManifest.xml` file within the `<manifest>` tag:
+### iOS FaceTec Native Integration
 
-```xml
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-feature android:name="android.hardware.camera" android:required="true" />
+This SDK includes native FaceTec integration for iOS. After installing the package and peer dependencies, run:
+
+```sh
+cd ios && pod install
 ```
+
+**Troubleshooting:**
+
+If you encounter the error `FaceTec module not available`, ensure:
+
+1. You've run `pod install` in the iOS directory
+2. Clean build folder in Xcode: **Product → Clean Build Folder**
+3. Rebuild the app
+
+The native module should be automatically linked via React Native autolinking.
 
 ## Usage
 
 `Soyio React Native` provides two ways to integrate the Soyio verification flow:
 
-1. **WebView Component**: A `SoyioWidget` component that renders a WebView within your app.
+1. **Component**: A `SoyioWidget` component that renders a WebView within your app.
 2. **InAppBrowser Functions**: Direct functions that open the verification flow in an in-app browser.
 
-## WebView Integration
+> ℹ️ **NFC validation** is only available when you integrate with the `SoyioWidget` component (WebView). The InAppBrowser mode does not support NFC.
+
+## Component Integration
 
 ### 1. Disclosure Request
 
