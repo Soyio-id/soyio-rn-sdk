@@ -7,6 +7,7 @@ def safeExtGet(prop, fallback) {
 
 android {
     compileSdkVersion safeExtGet('compileSdkVersion', 34)
+    namespace "com.soyio.soyiorndk"
     def javaVersion = safeExtGet('javaVersion', JavaVersion.VERSION_17)
 
     defaultConfig {
