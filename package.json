@@ -41,5 +41,8 @@
     "react-native-inappbrowser-reborn": "^3.7.0",
     "react-native-webview": "^13.16.0",
     "typescript": "^5.4.3"
+  },
+  "overrides": {
+    "js-yaml": "^4.1.1"
   }
 }
