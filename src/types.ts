@@ -66,8 +66,17 @@ export type AuthRequestParams = {
   authRequestId: `authreq_${string}`;
 }
 
+export type ConsentParams = {
+  templateId: `constpl_${string}`;
+  actionToken?: string;
+  entityId?: `ent_${string}`;
+  context?: string;
+  optionalReconsentBehavior?: 'notice' | 'askAgain' | 'hide';
+  mandatoryReconsentBehavior?: 'notice' | 'askAgain';
+}
+
 export type SoyioWidgetBaseOptions = {
-  uriScheme: string;
+  uriScheme?: string;
   isSandbox?: boolean;
   developmentUrl?: string;
 }
@@ -79,9 +88,12 @@ export type SoyioWidgetDisclosureOptions = SoyioWidgetBaseOptions & {
 
 export type SoyioWidgetAuthenticationOptions = SoyioWidgetBaseOptions;
 
+export type SoyioWidgetConsentOptions = SoyioWidgetBaseOptions;
+
 export type SoyioWidgetOptions =
   | SoyioWidgetDisclosureOptions
-  | SoyioWidgetAuthenticationOptions;
+  | SoyioWidgetAuthenticationOptions
+  | SoyioWidgetConsentOptions;
 
 export type WebviewSuccessEvent = {
   type: 'SUCCESS';
@@ -117,13 +129,25 @@ export type WidgetAuthRequestEvents =
   | WebviewSuccessEvent
   | PasskeyAuthRequired;
 
+export type ConsentCheckboxChangeEvent = {
+  eventName: 'CONSENT_CHECKBOX_CHANGE';
+  isSelected: boolean;
+  actionToken?: string;
+  identifier: string;
+}
+
+export type WidgetConsentEvents = ConsentCheckboxChangeEvent;
+
 export type WebViewEvent =
   | WidgetDisclosureEvents
-  | WidgetAuthRequestEvents;
+  | WidgetAuthRequestEvents
+  | WidgetConsentEvents;
 
 export type SoyioWidgetProps = {
   options: SoyioWidgetOptions;
-  requestType: 'disclosure' | 'authentication_request';
-  requestParams: DisclosureParams | AuthRequestParams;
+  requestType: 'disclosure' | 'authentication_request' | 'consent';
+  requestParams: DisclosureParams | AuthRequestParams | ConsentParams;
   onSuccess?: () => void;
+  onEvent?: (event: WebViewEvent) => void;
+  appearance?: Record<string, unknown>;
 };
