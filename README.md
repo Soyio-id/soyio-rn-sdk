@@ -311,6 +311,88 @@ const styles = StyleSheet.create({
 });
 ```
 
+### 3. Consent
+
+> 📖 [Integration Guide](https://docs.soyio.id/docs/integration-guide/consent/introduction)
+
+A **`consent`** is a component that renders a checkbox with a legal text, which the user can check to give their consent to a specific agreement.
+
+```jsx
+import { View, StyleSheet } from "react-native";
+import { ConsentBox } from "@soyio/soyio-rn-sdk";
+
+export default function App() {
+  const options = {
+    uriScheme: "<your-app-scheme>", // Required: Your app's URI scheme
+    isSandbox: true, // Optional
+  };
+
+  const consentParams = {
+    templateId: "<consent template id>", // Starts with 'constpl_'
+    // actionToken: "<action token>", // Optional: To restore state
+    // entityId: "<entity id>", // Optional: To check existing consent
+    // context: "<context>", // Optional: Additional context
+    // optionalReconsentBehavior: "notice", // Optional
+    // mandatoryReconsentBehavior: "notice", // Optional
+  };
+
+  const handleEvent = (event) => {
+    // Check if the event is a consent change
+    if (event.eventName === 'CONSENT_CHECKBOX_CHANGE') {
+      console.log('Is Selected:', event.isSelected);
+      console.log('Action Token:', event.actionToken);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <ConsentBox
+        options={options}
+        params={consentParams}
+        onEvent={handleEvent}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+```
+
+### Consent Events
+
+The `onEvent` callback receives events with the following structure:
+
+```typescript
+{
+  eventName: 'CONSENT_CHECKBOX_CHANGE',
+  isSelected: boolean,
+  actionToken?: string,
+  identifier: string
+}
+```
+
+- **`isSelected`**: Boolean value indicating whether the consent checkbox is selected.
+- **`actionToken`**: Token corresponding to the current state. You can use this to restore the consent state later or validate it server-side.
+
+### Consent Attribute Descriptions
+
+- **`templateId`**: (Required) Identifier of consent template. It must start with `'constpl_'`.
+- **`actionToken`**: (Optional) In case of losing the state of the consent (i.e. app restart), you can use a previously generated `actionToken` to restore the state of the consent.
+- **`entityId`**: (Optional) Identifier of the `entity` associated with a `ConsentAction`. If provided and a consent was previously granted by this entity, the UI will display a message indicating that consent has already been given.
+- **`context`**: (Optional) Additional information that will be saved with the consent. Useful when you want to track the consent from a specific context.
+- **`optionalReconsentBehavior`**: (Optional) Behavior when consent is already given on an optional category (`notice`, `askAgain`, `hide`).
+- **`mandatoryReconsentBehavior`**: (Optional) Behavior when consent is already given on a mandatory category (`notice`, `askAgain`).
+
+### 4. Customizing Appearance
+
+The `ConsentBox` (and other components) can be customized to match your application's look and feel. You can customize colors, fonts, shapes, and more using the `appearance` prop.
+
+For a full list of available customization options and examples, please refer to the [Appearance Customization Guide](https://docs.soyio.id/integration-guide/appearance).
+
 ### Event Handling
 
 The `SoyioWidget` component supports the following event handlers:
@@ -421,17 +503,49 @@ The InAppBrowser functions support the following callback handlers:
 
 This package includes TypeScript declarations.
 
-#### Developing
+### Development & Testing
 
-To develop the package, you need to use `yarn`. Install the dependencies:
+#### 1. Installation
+
+To develop the package, use `yarn` to install dependencies:
 
 ```sh
 yarn install
 ```
 
-To test locally, I recommend packaging the app. Remember to build the library first:
+#### 2. Building
+
+Build the package using:
 
 ```sh
-npm run build
-npm pack
+yarn build # Runs both ESM and CJS builds
 ```
+
+#### 3. Smoke Testing / Local Development
+
+To test your changes in a local React Native app, you can use the `npm pack` workflow. This creates a tarball of the package which can be installed directly in your test app.
+
+**In the SDK folder:**
+
+1. Build the SDK:
+   ```sh
+   yarn build
+   ```
+2. Pack the SDK:
+   ```sh
+   npm pack
+   ```
+   This generates a file like `soyio-soyio-rn-sdk-x.x.x.tgz`.
+
+**In your Test App:**
+
+1. Install the packed SDK:
+   ```sh
+   yarn add /path/to/soyio-rn-sdk/soyio-soyio-rn-sdk-x.x.x.tgz
+   ```
+   *Note: Using an absolute path is recommended.*
+
+2. (Optional) Clear cache if you run into issues:
+   ```sh
+   yarn start --reset-cache
+   ```
