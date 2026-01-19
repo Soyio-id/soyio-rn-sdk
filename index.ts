@@ -1,4 +1,5 @@
 export { SoyioWidget } from './src/webview';
+export { ConsentBox } from './src/consent';
 
 export {
   openDisclosure,
@@ -9,6 +10,8 @@ export type {
   SoyioWidgetOptions,
   DisclosureParams,
   AuthRequestParams,
+  ConsentParams,
+  ConsentCheckboxChangeEvent,
   SoyioWidgetProps,
 } from './src/types';
 
