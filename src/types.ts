@@ -131,6 +131,11 @@ export type WidgetAuthRequestEvents =
   | WebviewSuccessEvent
   | PasskeyAuthRequired;
 
+export type ConsentState = {
+  isSelected: boolean;
+  actionToken: string | null;
+}
+
 export type ConsentCheckboxChangeEvent = {
   type: 'CONSENT_CHECKBOX_CHANGE';
   isSelected: boolean;
@@ -139,6 +144,10 @@ export type ConsentCheckboxChangeEvent = {
 }
 
 export type WidgetConsentEvents = ConsentCheckboxChangeEvent;
+
+export interface ConsentBoxRef {
+  getState: () => ConsentState;
+}
 
 export type TooltipEvent = {
   type: 'TOOLTIP_STATE_CHANGE';

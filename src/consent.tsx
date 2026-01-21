@@ -4,8 +4,10 @@ import type { ViewProps } from 'react-native';
 
 import { ConsentSkeleton } from './components';
 import type {
+  ConsentBoxRef,
   ConsentCheckboxChangeEvent,
   ConsentParams,
+  ConsentState,
   SoyioAppearance,
   SoyioWidgetConsentOptions,
   WebViewEvent,
@@ -28,45 +30,60 @@ export type ConsentBoxProps = ViewProps & {
   appearance?: SoyioAppearance;
 };
 
-export function ConsentBox({
-  options,
-  params,
-  onEvent,
-  autoHeight,
-  showSkeleton = true,
-  appearance,
-  style,
-  ...props
-}: ConsentBoxProps) {
-  const [isLoading, setIsLoading] = useState(true);
+export const ConsentBox = React.forwardRef<ConsentBoxRef, ConsentBoxProps>(
+  (
+    {
+      options,
+      params,
+      onEvent,
+      autoHeight,
+      showSkeleton = true,
+      appearance,
+      style,
+      ...props
+    },
+    ref,
+  ) => {
+    const [isLoading, setIsLoading] = useState(true);
+    const stateRef = React.useRef<ConsentState>({
+      isSelected: false,
+      actionToken: null,
+    });
 
-  const handleEvent = useCallback((event: WebViewEvent) => {
-    if (event.type === 'CONSENT_CHECKBOX_CHANGE') {
-      onEvent?.(event as ConsentCheckboxChangeEvent);
-    }
-  }, [onEvent]);
+    React.useImperativeHandle(ref, () => ({
+      getState: () => stateRef.current,
+    }));
 
-  const handleReady = useCallback(() => {
-    setIsLoading(false);
-  }, []);
+    const handleEvent = useCallback(
+      (event: WebViewEvent) => {
+        if (event.type === 'CONSENT_CHECKBOX_CHANGE') {
+          const { isSelected, actionToken } = event;
+          stateRef.current = { isSelected, actionToken: actionToken || null };
+          onEvent?.(event as ConsentCheckboxChangeEvent);
+        }
+      },
+      [onEvent],
+    );
 
-  return (
-    <View style={[styles.container, style]} {...props}>
-      {showSkeleton && (
-        <ConsentSkeleton
-          theme={appearance?.theme}
-          visible={isLoading}
+    const handleReady = useCallback(() => {
+      setIsLoading(false);
+    }, []);
+
+    return (
+      <View style={[styles.container, style]} {...props}>
+        {showSkeleton && (
+          <ConsentSkeleton theme={appearance?.theme} visible={isLoading} />
+        )}
+        <SoyioWidget
+          options={options}
+          requestType="consent"
+          requestParams={params}
+          onEvent={handleEvent}
+          onReady={handleReady}
+          autoHeight={autoHeight}
+          appearance={appearance}
         />
-      )}
-      <SoyioWidget
-        options={options}
-        requestType="consent"
-        requestParams={params}
-        onEvent={handleEvent}
-        onReady={handleReady}
-        autoHeight={autoHeight}
-        appearance={appearance}
-      />
-    </View>
-  );
-}
+      </View>
+    );
+  },
+);

@@ -11,6 +11,8 @@ export type {
   DisclosureParams,
   AuthRequestParams,
   ConsentParams,
+  ConsentBoxRef,
+  ConsentState,
   ConsentCheckboxChangeEvent,
   SoyioWidgetProps,
   SoyioAppearance,
