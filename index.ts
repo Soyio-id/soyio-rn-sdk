@@ -13,6 +13,8 @@ export type {
   ConsentParams,
   ConsentCheckboxChangeEvent,
   SoyioWidgetProps,
+  SoyioAppearance,
+  SoyioTheme,
 } from './src/types';
 
 export type {
