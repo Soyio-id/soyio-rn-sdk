@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+example/app/node_modules/
 
 # Package
 package/
@@ -24,17 +25,33 @@ android/.cxx/
 android/.externalNativeBuild/
 android/**/build/
 android/**/generated/
+example/app/android/.gradle/
+example/app/android/.idea/
+example/app/android/local.properties
+example/app/android/captures/
+example/app/android/.cxx/
+example/app/android/.externalNativeBuild/
+example/app/android/**/build/
+example/app/android/**/generated/
 
 # iOS Frameworks - Runtime caches
 ios/Frameworks/**/cache_*/
+example/app/ios/Frameworks/**/cache_*/
+example/app/ios/Pods/
+example/app/ios/build/
+example/app/ios/DerivedData/
 
 # Metro
 .metro-health-check*
+example/app/.metro-health-check*
 
 # debug
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+example/app/npm-debug.*
+example/app/yarn-debug.*
+example/app/yarn-error.*
 
 # macOS
 .DS_Store
@@ -45,6 +62,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+example/app/*.tsbuildinfo
 
 # Package files
 *.tgz
