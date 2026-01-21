@@ -17,6 +17,84 @@ export interface ConsentSkeletonProps {
 
 const ANIMATION_DURATION = 1500;
 
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    minHeight: 112,
+    borderWidth: 1,
+    borderRadius: 4,
+    zIndex: 1,
+  },
+  mainContainer: {
+    padding: 16,
+    gap: 12,
+  },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  shimmerContainer: {
+    overflow: 'hidden',
+    borderRadius: 4,
+  },
+  shimmerBase: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+  },
+  shimmerHighlight: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 60,
+    opacity: 0.5,
+  },
+  iconCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
+  titleBar: {
+    height: 16,
+    flex: 0.3,
+  },
+  expandButton: {
+    width: 48,
+    height: 20,
+    marginLeft: 'auto',
+  },
+  checkboxContainer: {
+    width: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkbox: {
+    width: 16,
+    height: 16,
+  },
+  textContent: {
+    flex: 1,
+    gap: 8,
+  },
+  textLine1: {
+    height: 14,
+    width: '80%',
+  },
+  textLine2: {
+    height: 14,
+    width: '60%',
+  },
+});
+
 export const ConsentSkeleton: React.FC<ConsentSkeletonProps> = ({
   theme,
   visible = true,
@@ -116,81 +194,3 @@ export const ConsentSkeleton: React.FC<ConsentSkeletonProps> = ({
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    minHeight: 112,
-    borderWidth: 1,
-    borderRadius: 4,
-    zIndex: 1,
-  },
-  mainContainer: {
-    padding: 16,
-    gap: 12,
-  },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  bottomRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-  },
-  shimmerContainer: {
-    overflow: 'hidden',
-    borderRadius: 4,
-  },
-  shimmerBase: {
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-  },
-  shimmerHighlight: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: 60,
-    opacity: 0.5,
-  },
-  iconCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-  },
-  titleBar: {
-    height: 16,
-    flex: 0.3,
-  },
-  expandButton: {
-    width: 48,
-    height: 20,
-    marginLeft: 'auto',
-  },
-  checkboxContainer: {
-    width: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkbox: {
-    width: 16,
-    height: 16,
-  },
-  textContent: {
-    flex: 1,
-    gap: 8,
-  },
-  textLine1: {
-    height: 14,
-    width: '80%',
-  },
-  textLine2: {
-    height: 14,
-    width: '60%',
-  },
-});
