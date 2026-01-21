@@ -50,10 +50,17 @@ const tabs = ['Consent', 'Disclosure', 'Auth'] as const;
 
 type Tab = (typeof tabs)[number];
 
+type EventEntry = {
+  time: string;
+  message: string;
+};
+
 function App(): React.JSX.Element {
   console.log('App');
   const [activeTab, setActiveTab] = React.useState<Tab>('Consent');
-  const [eventsByTab, setEventsByTab] = React.useState<Record<Tab, string[]>>({
+  const [eventsByTab, setEventsByTab] = React.useState<
+    Record<Tab, EventEntry[]>
+  >({
     Consent: [],
     Disclosure: [],
     Auth: [],
@@ -61,9 +68,15 @@ function App(): React.JSX.Element {
   const consentRef = React.useRef<ConsentBoxRef>(null);
 
   const appendEvent = React.useCallback((tab: Tab, message: string) => {
+    const time = new Date().toLocaleTimeString([], {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
     setEventsByTab(prev => ({
       ...prev,
-      [tab]: [...prev[tab], message],
+      [tab]: [{time, message}, ...prev[tab]],
     }));
   }, []);
 
@@ -73,6 +86,27 @@ function App(): React.JSX.Element {
       [tab]: [],
     }));
   }, []);
+
+  const renderEvents = React.useCallback(
+    (tab: Tab) => {
+      const events = eventsByTab[tab];
+      if (events.length === 0) {
+        return <Text style={styles.eventText}>No events yet.</Text>;
+      }
+
+      return (
+        <View style={styles.eventList}>
+          {events.map((event, index) => (
+            <View key={`${event.time}-${index}`} style={styles.eventRow}>
+              <Text style={styles.eventTime}>{event.time}</Text>
+              <Text style={styles.eventMessage}>{event.message}</Text>
+            </View>
+          ))}
+        </View>
+      );
+    },
+    [eventsByTab],
+  );
 
   const handleDisclosure = async () => {
     await openDisclosure({
@@ -170,11 +204,7 @@ function App(): React.JSX.Element {
                   <Text style={styles.clearButtonText}>Clear</Text>
                 </Pressable>
               </View>
-              <Text style={styles.eventText}>
-                {eventsByTab.Consent.length > 0
-                  ? eventsByTab.Consent.join('\n')
-                  : 'No events yet.'}
-              </Text>
+              {renderEvents('Consent')}
             </View>
           </View>
         ) : null}
@@ -197,11 +227,7 @@ function App(): React.JSX.Element {
                   <Text style={styles.clearButtonText}>Clear</Text>
                 </Pressable>
               </View>
-              <Text style={styles.eventText}>
-                {eventsByTab.Disclosure.length > 0
-                  ? eventsByTab.Disclosure.join('\n')
-                  : 'No events yet.'}
-              </Text>
+              {renderEvents('Disclosure')}
             </View>
           </View>
         ) : null}
@@ -224,11 +250,7 @@ function App(): React.JSX.Element {
                   <Text style={styles.clearButtonText}>Clear</Text>
                 </Pressable>
               </View>
-              <Text style={styles.eventText}>
-                {eventsByTab.Auth.length > 0
-                  ? eventsByTab.Auth.join('\n')
-                  : 'No events yet.'}
-              </Text>
+              {renderEvents('Auth')}
             </View>
           </View>
         ) : null}
@@ -332,6 +354,26 @@ const styles = StyleSheet.create({
     color: '#374151',
   },
   eventText: {
+    fontSize: 12,
+    color: '#111827',
+    lineHeight: 18,
+  },
+  eventList: {
+    gap: 6,
+  },
+  eventRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  eventTime: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#6B7280',
+    minWidth: 70,
+  },
+  eventMessage: {
+    flex: 1,
     fontSize: 12,
     color: '#111827',
     lineHeight: 18,
