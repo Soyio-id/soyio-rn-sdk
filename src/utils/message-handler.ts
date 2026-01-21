@@ -160,7 +160,7 @@ export function buildMessageHandler(
     try {
       const eventData = JSON.parse(event.nativeEvent.data) as Record<string, unknown>;
 
-      if ('eventName' in eventData && eventData.eventName === 'CONSENT_CHECKBOX_CHANGE') {
+      if ('eventName' in eventData && (eventData.eventName === 'CONSENT_CHECKBOX_CHANGE' || eventData.eventName === 'CONSENT_STATE_CHANGE')) {
         const consentEvent = eventData as unknown as ConsentCheckboxChangeEvent;
         handleConsentCheckboxChangeEvent(consentEvent, dependencies);
         return;
