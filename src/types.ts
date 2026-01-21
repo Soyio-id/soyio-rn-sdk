@@ -132,7 +132,7 @@ export type WidgetAuthRequestEvents =
   | PasskeyAuthRequired;
 
 export type ConsentCheckboxChangeEvent = {
-  eventName: 'CONSENT_CHECKBOX_CHANGE';
+  type: 'CONSENT_CHECKBOX_CHANGE';
   isSelected: boolean;
   actionToken?: string;
   identifier: string;
@@ -141,7 +141,7 @@ export type ConsentCheckboxChangeEvent = {
 export type WidgetConsentEvents = ConsentCheckboxChangeEvent;
 
 export type TooltipEvent = {
-  eventName: 'TOOLTIP_STATE_CHANGE';
+  type: 'TOOLTIP_STATE_CHANGE';
   text: string;
   coordinates: {
     x: number;

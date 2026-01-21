@@ -160,33 +160,30 @@ export function buildMessageHandler(
   return (event: WebViewMessageEvent): void => {
     try {
       const eventData = JSON.parse(event.nativeEvent.data) as Record<string, unknown>;
+      const eventType = (eventData.type || eventData.eventName) as string | undefined;
 
-      if ('eventName' in eventData) {
-        if (eventData.eventName === 'CONSENT_CHECKBOX_CHANGE' || eventData.eventName === 'CONSENT_STATE_CHANGE') {
-          const consentEvent = eventData as unknown as ConsentCheckboxChangeEvent;
-          handleConsentCheckboxChangeEvent(consentEvent, dependencies);
-          return;
-        }
-
-        if (eventData.eventName === 'TOOLTIP_HOVER' || eventData.eventName === 'TOOLTIP_STATE_CHANGE') {
-          const tooltipEvent = {
-            ...eventData,
-            eventName: 'TOOLTIP_STATE_CHANGE',
-          } as unknown as TooltipEvent;
-          onEvent?.(tooltipEvent);
-          return;
-        }
-      }
-
-      if (!('type' in eventData)) {
+      if (!eventType) {
         return;
       }
 
       const typedEvent = eventData as unknown as WebViewEvent;
 
-      switch (eventData.type) {
+      switch (eventType) {
         case 'SUCCESS':
           handleSuccessEvent(onSuccess);
+          break;
+
+        case 'CONSENT_CHECKBOX_CHANGE':
+        case 'CONSENT_STATE_CHANGE':
+          handleConsentCheckboxChangeEvent(typedEvent as ConsentCheckboxChangeEvent, dependencies);
+          break;
+
+        case 'TOOLTIP_HOVER':
+        case 'TOOLTIP_STATE_CHANGE':
+          onEvent?.({
+            ...typedEvent,
+            type: 'TOOLTIP_STATE_CHANGE',
+          } as TooltipEvent);
           break;
 
         case 'PASSKEY_REQUIRED':

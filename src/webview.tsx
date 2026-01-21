@@ -94,7 +94,7 @@ export const SoyioWidget = ({
       if (autoHeight) {
         try {
           const payload = JSON.parse(rawData) as {
-            eventName?: string;
+            type?: string;
             height?: number;
             text?: string;
             coordinates?: { x: number; y: number };
@@ -102,7 +102,7 @@ export const SoyioWidget = ({
           };
 
           // Only use IFRAME_HEIGHT_CHANGE from monolith for reliable height
-          if (payload.eventName === 'IFRAME_HEIGHT_CHANGE' && typeof payload.height === 'number') {
+          if (payload.type === 'IFRAME_HEIGHT_CHANGE' && typeof payload.height === 'number') {
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             Animated.timing(heightAnim, {
               toValue: payload.height,
@@ -112,7 +112,7 @@ export const SoyioWidget = ({
           }
 
           // Handle Tooltip
-          if (payload.eventName === 'TOOLTIP_HOVER' || payload.eventName === 'TOOLTIP_STATE_CHANGE') {
+          if (payload.type === 'TOOLTIP_HOVER' || payload.type === 'TOOLTIP_STATE_CHANGE') {
             setTooltip({
               visible: payload.isVisible ?? false,
               text: payload.text ?? '',
@@ -136,7 +136,7 @@ export const SoyioWidget = ({
       if (!identifier) return;
 
       sendMessageToWebView({
-        eventName: 'APPEARANCE_CONFIG',
+        type: 'APPEARANCE_CONFIG',
         identifier,
         appearance,
       });

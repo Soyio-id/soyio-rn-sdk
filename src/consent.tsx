@@ -41,9 +41,7 @@ export function ConsentBox({
   const [isLoading, setIsLoading] = useState(true);
 
   const handleEvent = useCallback((event: WebViewEvent) => {
-    const eventName = 'eventName' in event ? event.eventName : (event as any).type;
-
-    if (eventName === 'CONSENT_CHECKBOX_CHANGE') {
+    if (event.type === 'CONSENT_CHECKBOX_CHANGE') {
       onEvent?.(event as ConsentCheckboxChangeEvent);
     }
   }, [onEvent]);
