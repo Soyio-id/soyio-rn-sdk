@@ -153,7 +153,7 @@ You need to configure a custom URI scheme for your application to handle deep li
 npx uri-scheme add custom-uri-scheme
 ```
 
-Replace `custom-uri-scheme` with your desired scheme name. This scheme should match the `uriScheme` parameter you use in the `SoyioWidget` options.
+Replace `custom-uri-scheme` with your desired scheme name. This scheme should match the `uriScheme` parameter you use in the `SoyioWidget` options. It is essential for the Disclosure and Auth flows to return control to your application once they finish (especially when using the In-App Browser or Passkeys). It is not needed if you are only using the `ConsentBox`.
 
 ## Usage
 
@@ -323,7 +323,7 @@ import { ConsentBox } from "@soyio/soyio-rn-sdk";
 
 export default function App() {
   const options = {
-    uriScheme: "<your-app-scheme>", // Required: Your app's URI scheme
+    // uriScheme: "<your-app-scheme>", // Not required for consent
     isSandbox: true, // Optional
   };
 
@@ -350,6 +350,8 @@ export default function App() {
         options={options}
         params={consentParams}
         onEvent={handleEvent}
+        appearance={{ theme: 'night' }}  // Optional: Customize appearance
+        showSkeleton={true}  // Optional: Show loading skeleton (default: true)
       />
     </View>
   );
@@ -378,6 +380,17 @@ The `onEvent` callback receives events with the following structure:
 - **`isSelected`**: Boolean value indicating whether the consent checkbox is selected.
 - **`actionToken`**: Token corresponding to the current state. You can use this to restore the consent state later or validate it server-side.
 
+### ConsentBox Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `options` | `SoyioWidgetConsentOptions` | Required | Widget options (uriScheme, isSandbox, etc.) |
+| `params` | `ConsentParams` | Required | Consent parameters (templateId, etc.) |
+| `onEvent` | `(event) => void` | - | Callback for consent events |
+| `appearance` | `SoyioAppearance` | - | Appearance customization |
+| `showSkeleton` | `boolean` | `true` | Show loading skeleton while content loads |
+| `autoHeight` | `boolean` | `true` | Auto-adjust height based on content |
+
 ### Consent Attribute Descriptions
 
 - **`templateId`**: (Required) Identifier of consent template. It must start with `'constpl_'`.
@@ -389,7 +402,36 @@ The `onEvent` callback receives events with the following structure:
 
 ### 4. Customizing Appearance
 
-The `ConsentBox` (and other components) can be customized to match your application's look and feel. You can customize colors, fonts, shapes, and more using the `appearance` prop.
+The `ConsentBox` (and other components) can be customized to match your application's look and feel using the `appearance` prop.
+
+#### Available Themes
+
+| Theme | Description |
+|-------|-------------|
+| `'soyio'` | Default Soyio theme |
+| `'night'` | Dark mode theme |
+| `'flat'` | Flat minimal theme |
+
+```jsx
+<ConsentBox
+  options={options}
+  params={consentParams}
+  appearance={{
+    theme: 'night',
+    variables: {
+      colorPrimary: '#6366f1',
+      colorBackground: '#0f172a',
+      borderRadius: '8px',
+    },
+  }}
+/>
+```
+
+#### TypeScript Types
+
+```typescript
+import type { SoyioAppearance, SoyioTheme } from '@soyio/soyio-rn-sdk';
+```
 
 For a full list of available customization options and examples, please refer to the [Appearance Customization Guide](https://docs.soyio.id/integration-guide/appearance).
 
@@ -398,6 +440,8 @@ For a full list of available customization options and examples, please refer to
 The `SoyioWidget` component supports the following event handlers:
 
 - **`onSuccess`**: Called when the verification/authentication process completes successfully
+- **`onEvent`**: Called for widget events (e.g., consent checkbox changes, tooltip state updates)
+- **`onReady`**: Called when the webview finishes loading
 
 ## InAppBrowser Integration
 
@@ -489,7 +533,7 @@ The InAppBrowser functions support the following callback handlers:
 
 #### Attribute Descriptions
 
-- **`uriScheme`**: (Required) The URI scheme for your application, used for deep linking and navigation.
+- **`uriScheme`**: (Required for Disclosure and Auth) The URI scheme for your application. It is used to return control to your app after completing the flow in an In-App Browser or when using external authentication flows like Passkeys. The monolith uses this scheme to build the redirect URL (e.g., `<your-app-scheme>://success`) when the verification process finishes. Not used in the `ConsentBox`.
 - **`companyId`**: (Optional) The unique identifier for the company, must start with `'com_'`.
 - **`userReference`**: (Optional) A reference identifier provided by the company for the user engaging with the widget. This identifier is used in events (`onEvent` and `webhooks`) to inform the company which user the events are associated with.
 - **`userEmail`**: (Optional) The user's email address.
@@ -523,29 +567,52 @@ yarn build # Runs both ESM and CJS builds
 
 #### 3. Smoke Testing / Local Development
 
-To test your changes in a local React Native app, you can use the `npm pack` workflow. This creates a tarball of the package which can be installed directly in your test app.
+This repo includes a React Native app under `example/app` to smoke test the SDK during development.
 
-**In the SDK folder:**
-
-1. Build the SDK:
+1. Install the example app dependencies:
    ```sh
-   yarn build
+   cd example/app
+   yarn install
    ```
-2. Pack the SDK:
+2. (Optional) Use the helper script:
    ```sh
-   npm pack
+   yarn smoke:setup
    ```
-   This generates a file like `soyio-soyio-rn-sdk-x.x.x.tgz`.
-
-**In your Test App:**
-
-1. Install the packed SDK:
+3. Replace the placeholder IDs in `example/app/App.tsx`.
+4. Run the platform helper scripts if you prefer:
    ```sh
-   yarn add /path/to/soyio-rn-sdk/soyio-soyio-rn-sdk-x.x.x.tgz
+   yarn smoke:ios
+   yarn smoke:android
    ```
-   *Note: Using an absolute path is recommended.*
 
-2. (Optional) Clear cache if you run into issues:
+**iOS**
+
+1. Install pods:
    ```sh
-   yarn start --reset-cache
+   cd example/app/ios
+   bundle install
+   bundle exec pod install
    ```
+2. Run the app:
+   ```sh
+   cd ..
+   yarn ios
+   ```
+
+**Android**
+
+1. Ensure you have an emulator or device running.
+2. JDK 17 is required for Android builds.
+3. Run the app:
+   ```sh
+   yarn smoke:android
+   ```
+
+Notes:
+
+- The app pulls the SDK from `file:../..`, so local changes are reflected immediately.
+- Metro is configured to watch the repo root (`example/app/metro.config.js`).
+- iOS NFC entitlements are not configured by default. Enable NFC in Xcode if needed.
+- The example app is excluded from the npm package via `.npmignore`.
+
+The previous `npm pack` workflow still works if you prefer a separate test app.
