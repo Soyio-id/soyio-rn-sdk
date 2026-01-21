@@ -57,7 +57,7 @@ export const SoyioWidget = ({
     y: 0,
   });
 
-  const getIdentifier = (): string | undefined => {
+  const getIdentifier = useCallback((): string | undefined => {
     if (requestType === 'consent') {
       return (requestParams as ConsentParams).templateId;
     }
@@ -69,7 +69,7 @@ export const SoyioWidget = ({
       return (requestParams as AuthRequestParams).authRequestId;
     }
     return undefined;
-  };
+  }, [requestParams, requestType]);
 
   const sendMessageToWebView = useCallback((messageObject: object) => {
     const message = JSON.stringify(messageObject);
@@ -127,7 +127,7 @@ export const SoyioWidget = ({
 
       buildMessageHandler(options, webViewRef, requestParams, onSuccess, onEvent)(event);
     },
-    [autoHeight, onEvent, onSuccess, options, requestParams],
+    [autoHeight, heightAnim, onEvent, onSuccess, options, requestParams],
   );
 
   React.useEffect(() => {
