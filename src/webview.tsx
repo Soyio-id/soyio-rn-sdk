@@ -141,7 +141,7 @@ export const SoyioWidget = ({
         appearance,
       });
     }
-  }, [appearance, getIdentifier, sendMessageToWebView]);
+  }, [appearance, getIdentifier, requestParams, requestType, sendMessageToWebView]);
 
   const containerStyle = useMemo(() => [style, { position: 'relative' as const }], [style]);
 
