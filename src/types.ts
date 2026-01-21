@@ -1,3 +1,5 @@
+import type { StyleProp, ViewStyle } from 'react-native';
+
 export type SoyioErrors =
   | 'user_exists'
   | 'facial_validation_error'
@@ -143,11 +145,36 @@ export type WebViewEvent =
   | WidgetAuthRequestEvents
   | WidgetConsentEvents;
 
+// Appearance types aligned with web widget (soy-io-widget)
+export type SoyioTheme = 'soyio' | 'night' | 'flat';
+
+export interface SoyioAppearanceVariables {
+  fontFamily?: string;
+  colorPrimary?: string;
+  colorBackground?: string;
+  colorSurface?: string;
+  colorText?: string;
+  colorTextSecondary?: string;
+  colorBorder?: string;
+  borderRadius?: string;
+  [key: string]: string | undefined;
+}
+
+export interface SoyioAppearance {
+  theme?: SoyioTheme;
+  variables?: SoyioAppearanceVariables;
+  rules?: Record<string, Record<string, string | number>>;
+  config?: Record<string, unknown>;
+}
+
 export type SoyioWidgetProps = {
   options: SoyioWidgetOptions;
   requestType: 'disclosure' | 'authentication_request' | 'consent';
   requestParams: DisclosureParams | AuthRequestParams | ConsentParams;
   onSuccess?: () => void;
   onEvent?: (event: WebViewEvent) => void;
-  appearance?: Record<string, unknown>;
+  onReady?: () => void;
+  appearance?: SoyioAppearance;
+  autoHeight?: boolean;
+  style?: StyleProp<ViewStyle>;
 };
