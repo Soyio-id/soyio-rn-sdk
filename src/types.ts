@@ -140,10 +140,22 @@ export type ConsentCheckboxChangeEvent = {
 
 export type WidgetConsentEvents = ConsentCheckboxChangeEvent;
 
+export type TooltipEvent = {
+  eventName: 'TOOLTIP_STATE_CHANGE';
+  text: string;
+  coordinates: {
+    x: number;
+    y: number;
+  };
+  isVisible: boolean;
+  identifier: string;
+};
+
 export type WebViewEvent =
   | WidgetDisclosureEvents
   | WidgetAuthRequestEvents
-  | WidgetConsentEvents;
+  | WidgetConsentEvents
+  | TooltipEvent;
 
 // Appearance types aligned with web widget (soy-io-widget)
 export type SoyioTheme = 'soyio' | 'night' | 'flat';

@@ -7,10 +7,12 @@ import {
   Platform,
   StyleSheet,
   UIManager,
+  View,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import type { WebViewMessageEvent } from 'react-native-webview';
 
+import { Tooltip } from './components';
 import { SOYIO_BASE_URLS } from './constants';
 import type {
   AuthRequestParams,
@@ -47,6 +49,13 @@ export const SoyioWidget = ({
 }: SoyioWidgetProps) => {
   const webViewRef = useRef<WebView>(null);
   const heightAnim = useRef(new Animated.Value(0)).current;
+  const [containerWidth, setContainerWidth] = React.useState(0);
+  const [tooltip, setTooltip] = React.useState({
+    visible: false,
+    text: '',
+    x: 0,
+    y: 0,
+  });
 
   const getIdentifier = (): string | undefined => {
     if (requestType === 'consent') {
@@ -84,7 +93,13 @@ export const SoyioWidget = ({
 
       if (autoHeight) {
         try {
-          const payload = JSON.parse(rawData) as { eventName?: string; height?: number };
+          const payload = JSON.parse(rawData) as {
+            eventName?: string;
+            height?: number;
+            text?: string;
+            coordinates?: { x: number; y: number };
+            isVisible?: boolean;
+          };
 
           // Only use IFRAME_HEIGHT_CHANGE from monolith for reliable height
           if (payload.eventName === 'IFRAME_HEIGHT_CHANGE' && typeof payload.height === 'number') {
@@ -94,6 +109,16 @@ export const SoyioWidget = ({
               duration: 200,
               useNativeDriver: false,
             }).start();
+          }
+
+          // Handle Tooltip
+          if (payload.eventName === 'TOOLTIP_HOVER' || payload.eventName === 'TOOLTIP_STATE_CHANGE') {
+            setTooltip({
+              visible: payload.isVisible ?? false,
+              text: payload.text ?? '',
+              x: payload.coordinates?.x ?? 0,
+              y: payload.coordinates?.y ?? 0,
+            });
           }
         } catch {
           // fall through to existing handler
@@ -118,11 +143,13 @@ export const SoyioWidget = ({
     }
   }, [appearance, getIdentifier, sendMessageToWebView]);
 
-  const wrapperStyle = useMemo(() => {
-    const baseStyle = [style, styles.wrapper];
+  const containerStyle = useMemo(() => [style, { position: 'relative' as const }], [style]);
+
+  const innerStyle = useMemo(() => {
+    const baseStyle = [styles.wrapper];
     if (!autoHeight) return [...baseStyle, styles.fill];
     return baseStyle;
-  }, [autoHeight, style]);
+  }, [autoHeight]);
 
   const animatedStyle = useMemo(() => {
     if (!autoHeight) return {};
@@ -132,19 +159,31 @@ export const SoyioWidget = ({
   const webViewUrl = buildUrl(options, requestType, requestParams);
 
   return (
-    <Animated.View style={[wrapperStyle, animatedStyle]}>
-      <WebView
-        ref={webViewRef}
-        source={{ uri: webViewUrl }}
-        originWhitelist={[...SOYIO_BASE_URLS, options.developmentUrl].filter(Boolean) as string[]}
-        onMessage={handleMessage}
-        javaScriptEnabled={true}
-        scrollEnabled={!autoHeight}
-        onLoadEnd={() => {
-          onReady?.();
-        }}
-        onError={(e) => console.error('[SoyioWidget DEBUG] WebView error:', e.nativeEvent)}
+    <View style={containerStyle}>
+      <Animated.View
+        style={[innerStyle, animatedStyle]}
+        onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
+      >
+        <WebView
+          ref={webViewRef}
+          source={{ uri: webViewUrl }}
+          originWhitelist={[...SOYIO_BASE_URLS, options.developmentUrl].filter(Boolean) as string[]}
+          onMessage={handleMessage}
+          javaScriptEnabled={true}
+          scrollEnabled={!autoHeight}
+          onLoadEnd={() => {
+            onReady?.();
+          }}
+          onError={(e) => console.error('[SoyioWidget DEBUG] WebView error:', e.nativeEvent)}
+        />
+      </Animated.View>
+      <Tooltip
+        text={tooltip.text}
+        x={tooltip.x}
+        y={tooltip.y}
+        visible={tooltip.visible}
+        containerWidth={containerWidth}
       />
-    </Animated.View>
+    </View>
   );
 };

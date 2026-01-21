@@ -13,6 +13,7 @@ import type {
   FaceTecThemeColors,
   PasskeyRegistrationRequired,
   SoyioWidgetOptions,
+  TooltipEvent,
   WebViewEvent,
 } from '../types';
 
@@ -160,10 +161,21 @@ export function buildMessageHandler(
     try {
       const eventData = JSON.parse(event.nativeEvent.data) as Record<string, unknown>;
 
-      if ('eventName' in eventData && (eventData.eventName === 'CONSENT_CHECKBOX_CHANGE' || eventData.eventName === 'CONSENT_STATE_CHANGE')) {
-        const consentEvent = eventData as unknown as ConsentCheckboxChangeEvent;
-        handleConsentCheckboxChangeEvent(consentEvent, dependencies);
-        return;
+      if ('eventName' in eventData) {
+        if (eventData.eventName === 'CONSENT_CHECKBOX_CHANGE' || eventData.eventName === 'CONSENT_STATE_CHANGE') {
+          const consentEvent = eventData as unknown as ConsentCheckboxChangeEvent;
+          handleConsentCheckboxChangeEvent(consentEvent, dependencies);
+          return;
+        }
+
+        if (eventData.eventName === 'TOOLTIP_HOVER' || eventData.eventName === 'TOOLTIP_STATE_CHANGE') {
+          const tooltipEvent = {
+            ...eventData,
+            eventName: 'TOOLTIP_STATE_CHANGE',
+          } as unknown as TooltipEvent;
+          onEvent?.(tooltipEvent);
+          return;
+        }
       }
 
       if (!('type' in eventData)) {
