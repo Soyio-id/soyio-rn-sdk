@@ -1,4 +1,17 @@
-declare module '@soyio/soyio-rn-sdk';
+declare module '@soyio/soyio-rn-sdk' {
+  import type React from 'react';
+
+  export interface ConsentBoxRef {
+    getState: () => {
+      isSelected: boolean;
+      actionToken: string | null;
+    };
+  }
+
+  export const ConsentBox: React.ComponentType<any>;
+  export function openDisclosure(params: any): Promise<void>;
+  export function openAuthenticationRequest(params: any): Promise<void>;
+}
 
 declare module '@env' {
   export const SOYIO_URI_SCHEME: string;

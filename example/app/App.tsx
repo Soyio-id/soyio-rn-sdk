@@ -18,6 +18,7 @@ import {
   ConsentBox,
   openAuthenticationRequest,
   openDisclosure,
+  type ConsentBoxRef,
 } from '@soyio/soyio-rn-sdk';
 import {
   SOYIO_AUTH_DEV_URL,
@@ -57,6 +58,7 @@ function App(): React.JSX.Element {
     Disclosure: [],
     Auth: [],
   });
+  const consentRef = React.useRef<ConsentBoxRef>(null);
 
   const appendEvent = React.useCallback((tab: Tab, message: string) => {
     setEventsByTab(prev => ({
@@ -124,7 +126,8 @@ function App(): React.JSX.Element {
                 key={tab}
                 onPress={() => setActiveTab(tab)}
                 style={[styles.tabButton, isActive && styles.tabButtonActive]}>
-                <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+                <Text
+                  style={[styles.tabText, isActive && styles.tabTextActive]}>
                   {tab}
                 </Text>
               </Pressable>
@@ -144,7 +147,20 @@ function App(): React.JSX.Element {
                 appendEvent('Consent', message);
               }}
               appearance={{theme: 'soyio'}}
+              ref={consentRef}
             />
+            <Pressable
+              style={styles.actionButton}
+              onPress={() => {
+                const state = consentRef.current?.getState();
+                console.log('Consent state:', state);
+                appendEvent(
+                  'Consent',
+                  `Consent state: ${JSON.stringify(state)}`,
+                );
+              }}>
+              <Text style={styles.actionButtonText}>Get Status</Text>
+            </Pressable>
             <View style={styles.eventWindow}>
               <View style={styles.eventHeader}>
                 <Text style={styles.eventTitle}>Events</Text>
