@@ -1,9 +1,10 @@
 {
   "name": "@soyio/soyio-rn-sdk",
-  "version": "3.1.2",
+  "version": "4.0.0",
   "license": "MIT",
   "author": "Ignacio Méndez",
   "main": "./package/index.js",
+  "react-native": "index.ts",
   "description": "Soyio React Native SDK",
   "homepage": "https://github.com/Soyio-id/soyio-rn-sdk",
   "types": "./package/index.d.ts",
@@ -12,10 +13,13 @@
     "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "build": "npm run build:esm && npm run build:cjs",
+    "build": "yarn build:esm && yarn build:cjs",
     "build:esm": "tsc",
     "build:cjs": "tsc --module commonjs",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint src index.ts --ext .ts",
+    "smoke:setup": "cd example/app && yarn install",
+    "smoke:android": "./scripts/smoke-android.sh",
+    "smoke:ios": "cd example/app && yarn ios",
     "version:get": "node -p \"require('./package.json').version\"",
     "sync:api-date": "node scripts/update-api-date.js"
   },
@@ -44,5 +48,6 @@
   },
   "overrides": {
     "js-yaml": "^4.1.1"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

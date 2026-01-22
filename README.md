@@ -153,7 +153,7 @@ You need to configure a custom URI scheme for your application to handle deep li
 npx uri-scheme add custom-uri-scheme
 ```
 
-Replace `custom-uri-scheme` with your desired scheme name. This scheme should match the `uriScheme` parameter you use in the `SoyioWidget` options.
+Replace `custom-uri-scheme` with your desired scheme name. This scheme should match the `uriScheme` parameter you use in the `SoyioWidget` options. It is essential for the Disclosure and Auth flows to return control to your application once they finish (especially when using the In-App Browser or Passkeys). It is not needed if you are only using the `ConsentBox`.
 
 ## Usage
 
@@ -311,11 +311,137 @@ const styles = StyleSheet.create({
 });
 ```
 
+### 3. Consent
+
+> 📖 [Integration Guide](https://docs.soyio.id/docs/integration-guide/consent/introduction)
+
+A **`consent`** is a component that renders a checkbox with a legal text, which the user can check to give their consent to a specific agreement.
+
+```jsx
+import { View, StyleSheet } from "react-native";
+import { ConsentBox } from "@soyio/soyio-rn-sdk";
+
+export default function App() {
+  const options = {
+    // uriScheme: "<your-app-scheme>", // Not required for consent
+    isSandbox: true, // Optional
+  };
+
+  const consentParams = {
+    templateId: "<consent template id>", // Starts with 'constpl_'
+    // actionToken: "<action token>", // Optional: To restore state
+    // entityId: "<entity id>", // Optional: To check existing consent
+    // context: "<context>", // Optional: Additional context
+    // optionalReconsentBehavior: "notice", // Optional
+    // mandatoryReconsentBehavior: "notice", // Optional
+  };
+
+  const handleEvent = (event) => {
+    // Check if the event is a consent change
+    if (event.eventName === 'CONSENT_CHECKBOX_CHANGE') {
+      console.log('Is Selected:', event.isSelected);
+      console.log('Action Token:', event.actionToken);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <ConsentBox
+        options={options}
+        params={consentParams}
+        onEvent={handleEvent}
+        appearance={{ theme: 'night' }}  // Optional: Customize appearance
+        showSkeleton={true}  // Optional: Show loading skeleton (default: true)
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+```
+
+### Consent Events
+
+The `onEvent` callback receives events with the following structure:
+
+```typescript
+{
+  eventName: 'CONSENT_CHECKBOX_CHANGE',
+  isSelected: boolean,
+  actionToken?: string,
+  identifier: string
+}
+```
+
+- **`isSelected`**: Boolean value indicating whether the consent checkbox is selected.
+- **`actionToken`**: Token corresponding to the current state. You can use this to restore the consent state later or validate it server-side.
+
+### ConsentBox Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `options` | `SoyioWidgetConsentOptions` | Required | Widget options (uriScheme, isSandbox, etc.) |
+| `params` | `ConsentParams` | Required | Consent parameters (templateId, etc.) |
+| `onEvent` | `(event) => void` | - | Callback for consent events |
+| `appearance` | `SoyioAppearance` | - | Appearance customization |
+| `showSkeleton` | `boolean` | `true` | Show loading skeleton while content loads |
+| `autoHeight` | `boolean` | `true` | Auto-adjust height based on content |
+
+### Consent Attribute Descriptions
+
+- **`templateId`**: (Required) Identifier of consent template. It must start with `'constpl_'`.
+- **`actionToken`**: (Optional) In case of losing the state of the consent (i.e. app restart), you can use a previously generated `actionToken` to restore the state of the consent.
+- **`entityId`**: (Optional) Identifier of the `entity` associated with a `ConsentAction`. If provided and a consent was previously granted by this entity, the UI will display a message indicating that consent has already been given.
+- **`context`**: (Optional) Additional information that will be saved with the consent. Useful when you want to track the consent from a specific context.
+- **`optionalReconsentBehavior`**: (Optional) Behavior when consent is already given on an optional category (`notice`, `askAgain`, `hide`).
+- **`mandatoryReconsentBehavior`**: (Optional) Behavior when consent is already given on a mandatory category (`notice`, `askAgain`).
+
+### 4. Customizing Appearance
+
+The `ConsentBox` (and other components) can be customized to match your application's look and feel using the `appearance` prop.
+
+#### Available Themes
+
+| Theme | Description |
+|-------|-------------|
+| `'soyio'` | Default Soyio theme |
+| `'night'` | Dark mode theme |
+| `'flat'` | Flat minimal theme |
+
+```jsx
+<ConsentBox
+  options={options}
+  params={consentParams}
+  appearance={{
+    theme: 'night',
+    variables: {
+      colorPrimary: '#6366f1',
+      colorBackground: '#0f172a',
+      borderRadius: '8px',
+    },
+  }}
+/>
+```
+
+#### TypeScript Types
+
+```typescript
+import type { SoyioAppearance, SoyioTheme } from '@soyio/soyio-rn-sdk';
+```
+
+For a full list of available customization options and examples, please refer to the [Appearance Customization Guide](https://docs.soyio.id/integration-guide/appearance).
+
 ### Event Handling
 
 The `SoyioWidget` component supports the following event handlers:
 
 - **`onSuccess`**: Called when the verification/authentication process completes successfully
+- **`onEvent`**: Called for widget events (e.g., consent checkbox changes, tooltip state updates)
+- **`onReady`**: Called when the webview finishes loading
 
 ## InAppBrowser Integration
 
@@ -407,7 +533,7 @@ The InAppBrowser functions support the following callback handlers:
 
 #### Attribute Descriptions
 
-- **`uriScheme`**: (Required) The URI scheme for your application, used for deep linking and navigation.
+- **`uriScheme`**: (Required for Disclosure and Auth) The URI scheme for your application. It is used to return control to your app after completing the flow in an In-App Browser or when using external authentication flows like Passkeys. The monolith uses this scheme to build the redirect URL (e.g., `<your-app-scheme>://success`) when the verification process finishes. Not used in the `ConsentBox`.
 - **`companyId`**: (Optional) The unique identifier for the company, must start with `'com_'`.
 - **`userReference`**: (Optional) A reference identifier provided by the company for the user engaging with the widget. This identifier is used in events (`onEvent` and `webhooks`) to inform the company which user the events are associated with.
 - **`userEmail`**: (Optional) The user's email address.
@@ -421,17 +547,68 @@ The InAppBrowser functions support the following callback handlers:
 
 This package includes TypeScript declarations.
 
-#### Developing
+### Development & Testing
 
-To develop the package, you need to use `yarn`. Install the dependencies:
+#### 1. Installation
+
+To develop the package, use `yarn` to install dependencies:
 
 ```sh
 yarn install
 ```
 
-To test locally, I recommend packaging the app. Remember to build the library first:
+#### 2. Building
+
+Build the package using:
 
 ```sh
-npm run build
-npm pack
+yarn build # Runs both ESM and CJS builds
 ```
+
+#### 3. Smoke Testing / Local Development
+
+This repo includes a React Native app under `example/app` to smoke test the SDK during development.
+
+1. Install the example app dependencies:
+   ```sh
+   cd example/app
+   yarn install
+   ```
+2. (Optional) Use the helper script:
+   ```sh
+   yarn smoke:setup
+   ```
+3. Replace the placeholder IDs in `example/app/App.tsx`.
+4. Run the platform helper scripts if you prefer:
+   ```sh
+   yarn smoke:ios
+   yarn smoke:android
+   ```
+
+**iOS**
+
+1. Install pods:
+   ```sh
+   cd example/app/ios
+   bundle install
+   bundle exec pod install
+   ```
+2. Run the app:
+   ```sh
+   cd ..
+   yarn ios
+   ```
+
+**Android**
+
+1. Ensure you have an emulator or device running.
+2. JDK 17 is required for Android builds.
+3. Run the app:
+   ```sh
+   yarn smoke:android
+   ```
+
+Notes:
+
+- The app pulls the SDK from `file:../..`, so local changes are reflected immediately.
+- Metro is configured to watch the repo root (`example/app/metro.config.js`).

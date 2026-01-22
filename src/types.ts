@@ -1,3 +1,5 @@
+import type { StyleProp, ViewStyle } from 'react-native';
+
 export type SoyioErrors =
   | 'user_exists'
   | 'facial_validation_error'
@@ -66,8 +68,17 @@ export type AuthRequestParams = {
   authRequestId: `authreq_${string}`;
 }
 
+export type ConsentParams = {
+  templateId: `constpl_${string}`;
+  actionToken?: string;
+  entityId?: `ent_${string}`;
+  context?: string;
+  optionalReconsentBehavior?: 'notice' | 'askAgain' | 'hide';
+  mandatoryReconsentBehavior?: 'notice' | 'askAgain';
+}
+
 export type SoyioWidgetBaseOptions = {
-  uriScheme: string;
+  uriScheme?: string;
   isSandbox?: boolean;
   developmentUrl?: string;
 }
@@ -79,9 +90,12 @@ export type SoyioWidgetDisclosureOptions = SoyioWidgetBaseOptions & {
 
 export type SoyioWidgetAuthenticationOptions = SoyioWidgetBaseOptions;
 
+export type SoyioWidgetConsentOptions = SoyioWidgetBaseOptions;
+
 export type SoyioWidgetOptions =
   | SoyioWidgetDisclosureOptions
-  | SoyioWidgetAuthenticationOptions;
+  | SoyioWidgetAuthenticationOptions
+  | SoyioWidgetConsentOptions;
 
 export type WebviewSuccessEvent = {
   type: 'SUCCESS';
@@ -117,13 +131,71 @@ export type WidgetAuthRequestEvents =
   | WebviewSuccessEvent
   | PasskeyAuthRequired;
 
+export type ConsentState = {
+  isSelected: boolean;
+  actionToken: string | null;
+}
+
+export type ConsentCheckboxChangeEvent = {
+  type: 'CONSENT_CHECKBOX_CHANGE';
+  isSelected: boolean;
+  actionToken?: string;
+  identifier: string;
+}
+
+export type WidgetConsentEvents = ConsentCheckboxChangeEvent;
+
+export interface ConsentBoxRef {
+  getState: () => ConsentState;
+}
+
+export type TooltipEvent = {
+  type: 'TOOLTIP_STATE_CHANGE';
+  text: string;
+  coordinates: {
+    x: number;
+    y: number;
+  };
+  isVisible: boolean;
+  identifier: string;
+};
+
 export type WebViewEvent =
   | WidgetDisclosureEvents
-  | WidgetAuthRequestEvents;
+  | WidgetAuthRequestEvents
+  | WidgetConsentEvents
+  | TooltipEvent;
+
+// Appearance types aligned with web widget (soy-io-widget)
+export type SoyioTheme = 'soyio' | 'night' | 'flat';
+
+export interface SoyioAppearanceVariables {
+  fontFamily?: string;
+  colorPrimary?: string;
+  colorBackground?: string;
+  colorSurface?: string;
+  colorText?: string;
+  colorTextSecondary?: string;
+  colorBorder?: string;
+  borderRadius?: string;
+  [key: string]: string | undefined;
+}
+
+export interface SoyioAppearance {
+  theme?: SoyioTheme;
+  variables?: SoyioAppearanceVariables;
+  rules?: Record<string, Record<string, string | number>>;
+  config?: Record<string, unknown>;
+}
 
 export type SoyioWidgetProps = {
   options: SoyioWidgetOptions;
-  requestType: 'disclosure' | 'authentication_request';
-  requestParams: DisclosureParams | AuthRequestParams;
+  requestType: 'disclosure' | 'authentication_request' | 'consent';
+  requestParams: DisclosureParams | AuthRequestParams | ConsentParams;
   onSuccess?: () => void;
+  onEvent?: (event: WebViewEvent) => void;
+  onReady?: () => void;
+  appearance?: SoyioAppearance;
+  autoHeight?: boolean;
+  style?: StyleProp<ViewStyle>;
 };

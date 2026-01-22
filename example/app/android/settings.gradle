@@ -1,0 +1,19 @@
+rootProject.name = 'SoyioExample'
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+        flatDir {
+            dirs(
+                "$rootDir/../node_modules/@soyio/soyio-rn-sdk/android/libs",
+                "$rootDir/../node_modules/@soyio/soyio-rn-sdk-local/android/libs",
+            )
+        }
+    }
+}
+
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':app'
+includeBuild('../node_modules/@react-native/gradle-plugin')

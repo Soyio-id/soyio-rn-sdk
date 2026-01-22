@@ -5,12 +5,15 @@ import { handleFaceTecVerification } from '../bridges/facetec';
 import { handlePasskeyAuthentication, handlePasskeyRequired } from '../bridges/passkey';
 import type {
   AuthRequestParams,
+  ConsentCheckboxChangeEvent,
+  ConsentParams,
   DisclosureParams,
   FaceTecConfigRequired,
   FaceTecRequired,
   FaceTecThemeColors,
   PasskeyRegistrationRequired,
   SoyioWidgetOptions,
+  TooltipEvent,
   WebViewEvent,
 } from '../types';
 
@@ -21,17 +24,26 @@ import { resolveBaseUrl } from './url-builder';
 interface MessageHandlerDependencies {
   options: SoyioWidgetOptions;
   webViewRef: React.RefObject<WebView>;
-  requestParams: DisclosureParams | AuthRequestParams;
+  requestParams: DisclosureParams | AuthRequestParams | ConsentParams;
   onSuccess?: () => void;
+  onEvent?: (event: WebViewEvent) => void;
 }
 
 let cachedFaceTecTheme: FaceTecThemeColors | null = null;
 
-function postMessageToWebView(webViewRef: React.RefObject<WebView>, messageObject: object): void {
+export function postMessageToWebView(
+  webViewRef: React.RefObject<WebView>,
+  messageObject: object,
+): void {
   const message = JSON.stringify(messageObject);
+  const webView = webViewRef.current;
+
+  if (!webView) {
+    return;
+  }
 
   if (Platform.OS === 'android') {
-    webViewRef.current.injectJavaScript(`
+    webView.injectJavaScript(`
       try {
         const message = ${JSON.stringify(message)};
         window.postMessage?.(message, '*');
@@ -42,7 +54,7 @@ function postMessageToWebView(webViewRef: React.RefObject<WebView>, messageObjec
       true;
     `);
   } else {
-    webViewRef.current.postMessage(message);
+    webView.postMessage(message);
   }
 }
 
@@ -62,7 +74,7 @@ function handlePasskeyRequiredEvent(
     handlePasskeyRequired({
       companyId: options.companyId,
       sessionToken: eventData.sessionToken,
-      uriScheme: options.uriScheme,
+      uriScheme: options.uriScheme!,
       isSandbox: options.isSandbox,
       developmentUrl: options.developmentUrl,
       onComplete: () => postMessageToWebView(webViewRef, { type: 'PASSKEY_REGISTERED' }),
@@ -79,7 +91,7 @@ function handlePasskeyAuthenticationEvent(
 
   handlePasskeyAuthentication({
     authRequestId: requestParams.authRequestId,
-    uriScheme: options.uriScheme,
+    uriScheme: options.uriScheme!,
     isSandbox: options.isSandbox,
     developmentUrl: options.developmentUrl,
     onComplete: () => postMessageToWebView(webViewRef, { type: 'PASSKEY_AUTHENTICATED' }),
@@ -130,30 +142,60 @@ function handleFaceTecRequiredEvent(
   });
 }
 
+function handleConsentCheckboxChangeEvent(
+  eventData: ConsentCheckboxChangeEvent,
+  dependencies: MessageHandlerDependencies,
+): void {
+  const { onEvent } = dependencies;
+  onEvent?.(eventData);
+}
+
 export function buildMessageHandler(
   options: SoyioWidgetOptions,
   webViewRef: React.RefObject<WebView>,
-  requestParams: DisclosureParams | AuthRequestParams,
+  requestParams: DisclosureParams | AuthRequestParams | ConsentParams,
   onSuccess?: () => void,
+  onEvent?: (event: WebViewEvent) => void,
 ) {
   const dependencies: MessageHandlerDependencies = {
     options,
     webViewRef,
     requestParams,
     onSuccess,
+    onEvent,
   };
 
   return (event: WebViewMessageEvent): void => {
     try {
-      const eventData = JSON.parse(event.nativeEvent.data) as WebViewEvent;
+      const eventData = JSON.parse(event.nativeEvent.data) as Record<string, unknown>;
+      const eventType = (eventData.type || eventData.eventName) as string | undefined;
 
-      switch (eventData.type) {
+      if (!eventType) {
+        return;
+      }
+
+      const typedEvent = eventData as unknown as WebViewEvent;
+
+      switch (eventType) {
         case 'SUCCESS':
           handleSuccessEvent(onSuccess);
           break;
 
+        case 'CONSENT_CHECKBOX_CHANGE':
+        case 'CONSENT_STATE_CHANGE':
+          handleConsentCheckboxChangeEvent(typedEvent as ConsentCheckboxChangeEvent, dependencies);
+          break;
+
+        case 'TOOLTIP_HOVER':
+        case 'TOOLTIP_STATE_CHANGE':
+          onEvent?.({
+            ...typedEvent,
+            type: 'TOOLTIP_STATE_CHANGE',
+          } as TooltipEvent);
+          break;
+
         case 'PASSKEY_REQUIRED':
-          handlePasskeyRequiredEvent(eventData, dependencies);
+          handlePasskeyRequiredEvent(typedEvent as PasskeyRegistrationRequired, dependencies);
           break;
 
         case 'PASSKEY_AUTHENTICATION_REQUIRED':
@@ -161,12 +203,12 @@ export function buildMessageHandler(
           break;
 
         case 'FACETEC_MAIN_THEME':
-          handleFaceTecConfigEvent(eventData);
+          handleFaceTecConfigEvent(typedEvent as FaceTecConfigRequired);
           break;
 
         case 'FACETEC_LIVENESS_PHOTO_ID_REQUIRED':
         case 'FACETEC_ID_ONLY_REQUIRED':
-          handleFaceTecRequiredEvent(eventData, dependencies);
+          handleFaceTecRequiredEvent(typedEvent as FaceTecRequired, dependencies);
           break;
 
         default:
@@ -174,7 +216,10 @@ export function buildMessageHandler(
       }
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('Error parsing message from Soyio widget:', error);
+      console.error(
+        'Error parsing message from Soyio widget:',
+        error,
+      );
     }
   };
 }
