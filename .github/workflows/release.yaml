@@ -5,12 +5,15 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+  pull-requests: read
+
 jobs:
   npm-release:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -20,6 +23,11 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org
 
+      - name: Upgrade npm for trusted publishing (OIDC)
+        run: |
+          npm install -g npm@^11.5.1
+          npm --version
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
@@ -28,8 +36,6 @@ jobs:
 
       - name: Publish the package
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   github-release:
     needs: npm-release

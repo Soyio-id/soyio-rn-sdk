@@ -16,6 +16,6 @@
     "baseUrl": "./src"
   },
   "include": ["**/*.ts", "**/*.tsx", "app.config.js"],
-  "exclude": ["node_modules", "package"],
+  "exclude": ["node_modules", "package", "example"],
   "extends": "./tsconfig.base.json"
 }
