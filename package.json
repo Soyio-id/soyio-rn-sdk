@@ -7,6 +7,10 @@
   "react-native": "index.ts",
   "description": "Soyio React Native SDK",
   "homepage": "https://github.com/Soyio-id/soyio-rn-sdk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Soyio-id/soyio-rn-sdk"
+  },
   "types": "./package/index.d.ts",
   "scripts": {
     "bump!": "sh scripts/bump.sh",
