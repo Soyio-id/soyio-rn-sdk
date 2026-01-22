@@ -19,7 +19,7 @@ import type {
   ConsentParams,
   SoyioWidgetProps,
 } from './types';
-import { buildMessageHandler, buildUrl } from './utils';
+import { buildMessageHandler, buildUrl, postMessageToWebView } from './utils';
 
 // Enable LayoutAnimation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -71,22 +71,6 @@ export const SoyioWidget = ({
     return undefined;
   }, [requestParams, requestType]);
 
-  const sendMessageToWebView = useCallback((messageObject: object) => {
-    const message = JSON.stringify(messageObject);
-    const script = `
-      try {
-        const message = ${JSON.stringify(message)};
-        window.postMessage?.(message, '*');
-        document.dispatchEvent?.(new MessageEvent('message', { data: message }));
-      } catch (e) {
-        console.warn('Failed to send message to WebView:', e);
-      }
-      true;
-    `;
-
-    webViewRef.current?.injectJavaScript(script);
-  }, []);
-
   const handleMessage = useCallback(
     (event: WebViewMessageEvent) => {
       const rawData = event.nativeEvent.data;
@@ -135,13 +119,13 @@ export const SoyioWidget = ({
       const identifier = getIdentifier();
       if (!identifier) return;
 
-      sendMessageToWebView({
+      postMessageToWebView(webViewRef, {
         type: 'APPEARANCE_CONFIG',
         identifier,
         appearance,
       });
     }
-  }, [appearance, getIdentifier, requestParams, requestType, sendMessageToWebView]);
+  }, [appearance, getIdentifier, requestParams, requestType]);
 
   const containerStyle = useMemo(() => [style, { position: 'relative' as const }], [style]);
 

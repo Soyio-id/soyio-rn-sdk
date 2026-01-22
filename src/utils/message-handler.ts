@@ -31,11 +31,19 @@ interface MessageHandlerDependencies {
 
 let cachedFaceTecTheme: FaceTecThemeColors | null = null;
 
-function postMessageToWebView(webViewRef: React.RefObject<WebView>, messageObject: object): void {
+export function postMessageToWebView(
+  webViewRef: React.RefObject<WebView>,
+  messageObject: object,
+): void {
   const message = JSON.stringify(messageObject);
+  const webView = webViewRef.current;
+
+  if (!webView) {
+    return;
+  }
 
   if (Platform.OS === 'android') {
-    webViewRef.current.injectJavaScript(`
+    webView.injectJavaScript(`
       try {
         const message = ${JSON.stringify(message)};
         window.postMessage?.(message, '*');
@@ -46,7 +54,7 @@ function postMessageToWebView(webViewRef: React.RefObject<WebView>, messageObjec
       true;
     `);
   } else {
-    webViewRef.current.postMessage(message);
+    webView.postMessage(message);
   }
 }
 
