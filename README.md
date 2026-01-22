@@ -612,7 +612,3 @@ Notes:
 
 - The app pulls the SDK from `file:../..`, so local changes are reflected immediately.
 - Metro is configured to watch the repo root (`example/app/metro.config.js`).
-- iOS NFC entitlements are not configured by default. Enable NFC in Xcode if needed.
-- The example app is excluded from the npm package via `.npmignore`.
-
-The previous `npm pack` workflow still works if you prefer a separate test app.
