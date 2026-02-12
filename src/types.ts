@@ -75,6 +75,7 @@ export type ConsentParams = {
   context?: string;
   optionalReconsentBehavior?: 'notice' | 'askAgain' | 'hide';
   mandatoryReconsentBehavior?: 'notice' | 'askAgain';
+  allowGranularScopeSelection?: boolean;
 }
 
 export type SoyioWidgetBaseOptions = {
