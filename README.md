@@ -99,7 +99,7 @@ After installing the package and peer dependencies, run:
 cd ios && pod install
 ```
 
-### Apple Silicon Simulator Compatibility
+### 2. Apple Silicon Simulator Compatibility
 
 `FaceTecSDK.framework` ships with `x86_64` for simulator and `arm64` for physical devices. On Apple Silicon Macs, iOS simulator builds may fail when Xcode tries to link the device `arm64` slice.
 
@@ -110,14 +110,16 @@ If you are integrating an older SDK version, add this to your app `Podfile`:
 ```ruby
 post_install do |installer|
   installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+    if target.name == 'soyio_rn_sdk'
+      target.build_configurations.each do |config|
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      end
     end
   end
 end
 ```
 
-### 2. Permissions
+### 3. Permissions
 
 Add the following permissions to your `ios/YourApp/Info.plist` file:
 
@@ -139,7 +141,7 @@ If you want to enable NFC validation with the `SoyioWidget`, also add:
 </array>
 ```
 
-### 3. NFC Entitlements
+### 4. NFC Entitlements
 
 For NFC to work, you also need to create (or update) your entitlements file at `ios/YourApp/YourApp.entitlements`:
 
