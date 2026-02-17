@@ -33,12 +33,14 @@ Pod::Spec.new do |s|
   # Pod target configuration
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'SWIFT_VERSION' => '5.0'
+    'SWIFT_VERSION' => '5.0',
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
   }
 
   # User project configuration
   s.user_target_xcconfig = {
-    'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/Headers/Public/React-Core"'
+    'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/Headers/Public/React-Core"',
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
   }
 
   # Swift version
