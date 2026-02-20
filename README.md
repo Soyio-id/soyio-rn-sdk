@@ -354,6 +354,7 @@ export default function App() {
     // context: "<context>", // Optional: Additional context
     // optionalReconsentBehavior: "notice", // Optional
     // mandatoryReconsentBehavior: "notice", // Optional
+    // allowGranularScopeSelection: true, // Optional
   };
 
   const handleEvent = (event) => {
@@ -419,6 +420,7 @@ The `onEvent` callback receives events with the following structure:
 - **`context`**: (Optional) Additional information that will be saved with the consent. Useful when you want to track the consent from a specific context.
 - **`optionalReconsentBehavior`**: (Optional) Behavior when consent is already given on an optional category (`notice`, `askAgain`, `hide`).
 - **`mandatoryReconsentBehavior`**: (Optional) Behavior when consent is already given on a mandatory category (`notice`, `askAgain`).
+- **`allowGranularScopeSelection`**: (Optional) If `true`, users can grant consent for individual scopes (for example products or branches) when the consent template supports multi-scope selection.
 
 ### 4. Customizing Appearance
 
