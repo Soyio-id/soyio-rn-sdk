@@ -86,39 +86,41 @@ class IOSFacetecSdk: RCTEventEmitter {
             return
         }
 
-        let status = FaceTec.sdk.getStatus()
-        if status == .initialized {
-            resolver(["success": true])
-            return
-        }
-
-        // Apply customization before initializing (matching Android pattern)
-        var themeColors: [String: String]? = nil
-        if let theme = config["theme"] as? [String: Any] {
-            themeColors = [
-                "mainColor": theme["mainColor"] as? String ?? "",
-                "highlightColor": theme["highlightColor"] as? String ?? "",
-                "disabledColor": theme["disabledColor"] as? String ?? ""
-            ]
-        }
-        FacetecConfig.apply(theme: themeColors)
-
-        // Initialize SDK directly (matching Android pattern)
-        FaceTec.sdk.initializeInProductionMode(
-            productionKeyText: productionKey,
-            deviceKeyIdentifier: deviceKey,
-            faceScanEncryptionKey: publicKey,
-            completion: { initializationSuccessful in
-                if initializationSuccessful {
-                    resolver(["success": true])
-                } else {
-                    let sdkStatus = FaceTec.sdk.getStatus()
-                    print("[FaceTec] Initialization failed with status: \(sdkStatus.rawValue) (\(sdkStatus))")
-                    let errorMessage = self.getStatusErrorMessage(sdkStatus)
-                    resolver(["success": false, "error": errorMessage])
-                }
+        DispatchQueue.main.async {
+            let status = FaceTec.sdk.getStatus()
+            if status == .initialized {
+                resolver(["success": true])
+                return
             }
-        )
+
+            // Apply customization before initializing (matching Android pattern)
+            var themeColors: [String: String]? = nil
+            if let theme = config["theme"] as? [String: Any] {
+                themeColors = [
+                    "mainColor": theme["mainColor"] as? String ?? "",
+                    "highlightColor": theme["highlightColor"] as? String ?? "",
+                    "disabledColor": theme["disabledColor"] as? String ?? ""
+                ]
+            }
+            FacetecConfig.apply(theme: themeColors)
+
+            // Initialize SDK directly (matching Android pattern)
+            FaceTec.sdk.initializeInProductionMode(
+                productionKeyText: productionKey,
+                deviceKeyIdentifier: deviceKey,
+                faceScanEncryptionKey: publicKey,
+                completion: { initializationSuccessful in
+                    if initializationSuccessful {
+                        resolver(["success": true])
+                    } else {
+                        let sdkStatus = FaceTec.sdk.getStatus()
+                        print("[FaceTec] Initialization failed with status: \(sdkStatus.rawValue) (\(sdkStatus))")
+                        let errorMessage = self.getStatusErrorMessage(sdkStatus)
+                        resolver(["success": false, "error": errorMessage])
+                    }
+                }
+            )
+        }
     }
 
     private func startLivenessAndIDVerificationFlow(facetecSessionToken: String,
