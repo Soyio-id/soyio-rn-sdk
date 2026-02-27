@@ -8,7 +8,6 @@ class IOSFacetecSdk: RCTEventEmitter {
 
     private var currentPhotoIDProcessor: SoyioPhotoIDMatchProcessor?
     private var currentIDOnlyProcessor: SoyioIDOnlyProcessor?
-    private var isInitializing = false
 
     @objc
     override static func requiresMainQueueSetup() -> Bool {
@@ -88,12 +87,11 @@ class IOSFacetecSdk: RCTEventEmitter {
         }
 
         DispatchQueue.main.async {
-            if self.isInitializing {
-                resolver(["success": false, "error": "FaceTec SDK initialization already in progress"])
+            let status = FaceTec.sdk.getStatus()
+            if status == .initialized {
+                resolver(["success": true])
                 return
             }
-
-            self.isInitializing = true
 
             // Apply customization before initializing (matching Android pattern)
             var themeColors: [String: String]? = nil
@@ -106,12 +104,12 @@ class IOSFacetecSdk: RCTEventEmitter {
             }
             FacetecConfig.apply(theme: themeColors)
 
+            // Initialize SDK directly (matching Android pattern)
             FaceTec.sdk.initializeInProductionMode(
                 productionKeyText: productionKey,
                 deviceKeyIdentifier: deviceKey,
                 faceScanEncryptionKey: publicKey,
                 completion: { initializationSuccessful in
-                    self.isInitializing = false
                     if initializationSuccessful {
                         resolver(["success": true])
                     } else {

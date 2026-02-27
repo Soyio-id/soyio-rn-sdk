@@ -9,6 +9,8 @@
 !soyio_rn_sdk.podspec
 !README.md
 
+ios/Frameworks-dev/**
+
 android/build/**
 android/.gradle/**
 android/.idea/**

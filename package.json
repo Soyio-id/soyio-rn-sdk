@@ -1,6 +1,6 @@
 {
   "name": "@soyio/soyio-rn-sdk",
-  "version": "4.1.3",
+  "version": "4.1.4",
   "license": "MIT",
   "author": "Ignacio Méndez",
   "main": "./package/index.js",
@@ -25,7 +25,8 @@
     "smoke:android": "./scripts/smoke-android.sh",
     "smoke:ios": "cd example/app && yarn ios",
     "version:get": "node -p \"require('./package.json').version\"",
-    "sync:api-date": "node scripts/update-api-date.js"
+    "sync:api-date": "node scripts/update-api-date.js",
+    "pack:dev": "sh scripts/pack-dev.sh"
   },
   "peerDependencies": {
     "react": "*",
