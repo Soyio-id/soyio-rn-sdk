@@ -15,7 +15,7 @@ set -e
 XCFW_SRC="${PODS_TARGET_SRCROOT}/ios/Frameworks/FaceTecSDK.xcframework"
 XCFW_DST="${PODS_XCFRAMEWORKS_BUILD_DIR}/soyio_rn_sdk"
 
-if [ "${PLATFORM_NAME}" = "iphonesimulator" ]; then
+if [[ "${PLATFORM_NAME}" == "iphonesimulator" ]]; then
   SLICE="ios-arm64_x86_64-simulator"
 else
   SLICE="ios-arm64"
@@ -30,7 +30,7 @@ rsync -a --delete "${XCFW_SRC}/${SLICE}/FaceTecSDK.framework" "${XCFW_DST}/"
 # copied into the .app bundle.
 EMBED_LINE='install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/soyio_rn_sdk/FaceTecSDK.framework"'
 for fw_script in "${PODS_ROOT}/Target Support Files"/Pods-*/Pods-*-frameworks.sh; do
-  [ -f "$fw_script" ] || continue
+  [[ -f "$fw_script" ]] || continue
   grep -q 'soyio_rn_sdk/FaceTecSDK' "$fw_script" && continue
   awk -v line="$EMBED_LINE" '/^if.*COCOAPODS_PARALLEL_CODE_SIGN/{print line}1' "$fw_script" > "${fw_script}.tmp"
   mv "${fw_script}.tmp" "$fw_script"
