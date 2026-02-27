@@ -23,18 +23,12 @@ Pod::Spec.new do |s|
   }
 
   # Vendored FaceTec framework
-  s.vendored_frameworks = 'ios/Frameworks/FaceTecSDK.framework'
-
-  # Framework search paths
-  s.xcconfig = {
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) "$(PODS_TARGET_SRCROOT)/ios/Frameworks"'
-  }
+  s.vendored_frameworks = 'ios/Frameworks/FaceTecSDK.xcframework'
 
   # Pod target configuration
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'SWIFT_VERSION' => '5.0',
-    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
+    'SWIFT_VERSION' => '5.0'
   }
 
   # User project configuration
