@@ -6,6 +6,7 @@
 !android/**
 !assets/**
 !react-native.config.js
+!scripts/prepare-facetec-xcframework.sh
 !soyio_rn_sdk.podspec
 !README.md
 
