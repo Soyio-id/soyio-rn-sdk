@@ -15,7 +15,6 @@ Pod::Spec.new do |s|
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
   s.exclude_files = 'ios/Frameworks/**/*', 'ios/Frameworks-dev/**/*'
 
-  # Font and image resources
   s.resource_bundles = {
     'SoyioRnSdk' => [
       'assets/fonts/**/*.ttf',
@@ -23,24 +22,31 @@ Pod::Spec.new do |s|
     ]
   }
 
-  # Vendored FaceTec framework
+  # FaceTecSDK is a dynamic xcframework. CocoaPods doesn't fully handle
+  # vendored xcframeworks in pods with source files, so we use a script phase
+  # to extract the correct slice and patch the consumer's embed script.
+  # See scripts/prepare-facetec-xcframework.sh for details.
   s.vendored_frameworks = 'ios/Frameworks/FaceTecSDK.xcframework'
 
-  # Pod target configuration
+  s.script_phase = {
+    :name => 'Extract and prepare FaceTecSDK XCFramework',
+    :script => 'bash "${PODS_TARGET_SRCROOT}/scripts/prepare-facetec-xcframework.sh"',
+    :execution_position => :before_compile
+  }
+
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'SWIFT_VERSION' => '5.0',
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) "$(PODS_TARGET_SRCROOT)/ios/Frameworks"'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) "${PODS_XCFRAMEWORKS_BUILD_DIR}/soyio_rn_sdk"'
   }
 
-  # User project configuration
+  # Propagate FaceTecSDK to consumer so the linker resolves symbols
   s.user_target_xcconfig = {
-    'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/Headers/Public/React-Core"'
+    'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/Headers/Public/React-Core"',
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) "${PODS_XCFRAMEWORKS_BUILD_DIR}/soyio_rn_sdk"',
+    'OTHER_LDFLAGS' => '$(inherited) -framework "FaceTecSDK"'
   }
 
-  # Swift version
   s.swift_version = '5.0'
-
-  # React Native dependency
   s.dependency 'React-Core'
 end
