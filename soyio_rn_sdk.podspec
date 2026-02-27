@@ -29,7 +29,8 @@ Pod::Spec.new do |s|
   # Pod target configuration
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'SWIFT_VERSION' => '5.0'
+    'SWIFT_VERSION' => '5.0',
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) "$(PODS_TARGET_SRCROOT)/ios/Frameworks"'
   }
 
   # User project configuration
