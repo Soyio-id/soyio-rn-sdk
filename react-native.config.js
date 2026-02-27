@@ -1,9 +1,7 @@
 module.exports = {
   dependency: {
     platforms: {
-      ios: {
-        podspecPath: './soyio_rn_sdk.podspec',
-      },
+      ios: {},
       android: {
         sourceDir: './android',
         packageImportPath: 'import com.soyio.soyiorndk.AndroidFacetecSdkPackage;',

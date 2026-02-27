@@ -13,6 +13,7 @@ Pod::Spec.new do |s|
   s.source       = { git: 'https://github.com/Soyio-id/soyio-rn-sdk.git', tag: s.version.to_s }
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
+  s.exclude_files = 'ios/Frameworks/**/*', 'ios/Frameworks-dev/**/*'
 
   # Font and image resources
   s.resource_bundles = {
