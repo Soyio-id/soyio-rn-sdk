@@ -37,6 +37,42 @@ jobs:
       - name: Publish the package
         run: npm publish --provenance --access public
 
+  npm-release-dev:
+    needs: npm-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Upgrade npm for trusted publishing (OIDC)
+        run: |
+          npm install -g npm@^11.5.1
+          npm --version
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build the package
+        run: yarn run build
+
+      - name: Swap to development FaceTec framework
+        run: |
+          rm -rf ios/Frameworks/FaceTecSDK.xcframework
+          cp -r ios/Frameworks-dev/FaceTecSDK.xcframework ios/Frameworks/FaceTecSDK.xcframework
+
+      - name: Set dev version
+        run: |
+          VERSION=$(npm run --silent version:get)
+          npm version "${VERSION}-dev" --no-git-tag-version
+
+      - name: Publish dev package
+        run: npm publish --provenance --access public --tag dev
+
   github-release:
     needs: npm-release
     permissions: write-all
