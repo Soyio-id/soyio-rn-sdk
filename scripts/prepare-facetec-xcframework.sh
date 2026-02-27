@@ -12,7 +12,17 @@
 set -e
 
 # --- 1. Extract the correct xcframework slice for the current platform -----
-"${PODS_ROOT}/Target Support Files/soyio_rn_sdk/soyio_rn_sdk-xcframeworks.sh"
+XCFW_SRC="${PODS_TARGET_SRCROOT}/ios/Frameworks/FaceTecSDK.xcframework"
+XCFW_DST="${PODS_XCFRAMEWORKS_BUILD_DIR}/soyio_rn_sdk"
+
+if [ "${PLATFORM_NAME}" = "iphonesimulator" ]; then
+  SLICE="ios-arm64_x86_64-simulator"
+else
+  SLICE="ios-arm64"
+fi
+
+mkdir -p "${XCFW_DST}"
+rsync -a --delete "${XCFW_SRC}/${SLICE}/FaceTecSDK.framework" "${XCFW_DST}/"
 
 # --- 2. Patch consumer embed-frameworks script -----------------------------
 # CocoaPods generates Pods-<Target>-frameworks.sh to embed dynamic frameworks
