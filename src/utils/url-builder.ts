@@ -1,3 +1,4 @@
+import { version } from '../../package.json';
 import { PRODUCTION_URL, SANDBOX_URL } from '../constants';
 import type {
   AuthRequestParams,
@@ -51,7 +52,7 @@ function createBaseParams(
   options: SoyioWidgetOptions,
   isWebview = true,
 ): Record<string, string> {
-  const baseParams: Record<string, string> = { sdk: `rn${getPlatformSuffix()}` };
+  const baseParams: Record<string, string> = { sdk: `rn${getPlatformSuffix()}`, sdkVersion: version };
 
   if (options.uriScheme) baseParams.uriScheme = options.uriScheme;
   if (isWebview) baseParams.rn_webview = 'true';
