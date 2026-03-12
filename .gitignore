@@ -35,7 +35,6 @@ example/app/android/**/build/
 example/app/android/**/generated/
 
 # iOS Frameworks - Runtime caches
-ios/Frameworks/**/cache_*/
 example/app/ios/Frameworks/**/cache_*/
 example/app/ios/Pods/
 example/app/ios/build/
